@@ -1,20 +1,17 @@
 from decimal import Decimal
-
-
-try:
-    # Python 2
-    str_cls = unicode
-except NameError:
-    # Python 3
-    str_cls = str
+from typing import TypedDict, cast
 
 from . import rates
 from .errors import UndefinitiveError
 
 
 def calculate_rate(
-    country_code, subdivision, city, address_country_code=None, address_exception=None
-):
+    country_code: str,
+    subdivision: str,
+    city: str,
+    address_country_code: str | None = None,
+    address_exception: str | None = None,
+) -> tuple[Decimal, str, str | None]:
     """
     Calculates the VAT rate from the data returned by a GeoLite2 database
 
@@ -45,13 +42,13 @@ def calculate_rate(
         A tuple of (Decimal percentage rate, country code, exception name [or None])
     """
 
-    if not country_code or not isinstance(country_code, str_cls) or len(country_code) != 2:
+    if not country_code or not isinstance(country_code, str) or len(country_code) != 2:
         raise ValueError('Invalidly formatted country code')
 
-    if not isinstance(subdivision, str_cls):
+    if not isinstance(subdivision, str):
         raise ValueError('Subdivision is not a string')
 
-    if not isinstance(city, str_cls):
+    if not isinstance(city, str):
         raise ValueError('City is not a string')
 
     country_code = country_code.upper()
@@ -69,11 +66,11 @@ def calculate_rate(
     exceptions = GEOIP2_EXCEPTIONS[country_code]
     for matcher in exceptions:
         # Subdivision-only match
-        if isinstance(matcher, str_cls):
+        if isinstance(matcher, str):
             sub_match = matcher
             city_match = None
         else:
-            sub_match, city_match = matcher
+            sub_match, city_match = cast(tuple[str, str], matcher)
 
         if sub_match != subdivision:
             continue
@@ -95,7 +92,7 @@ def calculate_rate(
             if address_exception != exception_name:
                 continue
 
-        rate = rates.BY_COUNTRY[country_code]['exceptions'][exception_name]
+        rate = cast(Decimal, rates.BY_COUNTRY[country_code]['exceptions'][exception_name])
         return (rate, country_code, exception_name)
 
     return (country_default, country_code, None)
@@ -109,7 +106,14 @@ def calculate_rate(
 # There is a key 'definitive' that indicates is the match is sufficiently
 # specific to fully map to the exemption. If 'definitive' is False, other
 # methods must be used to obtain place of supply proof.
-GEOIP2_EXCEPTIONS = {
+class _GeoIpEntry(TypedDict):
+    name: str
+    definitive: bool
+
+
+type _MatchKey = str | tuple[str, str]
+
+GEOIP2_EXCEPTIONS: dict[str, dict[_MatchKey, _GeoIpEntry]] = {
     'AT': {
         ('tyrol', 'reutte'): {'name': 'Jungholz', 'definitive': False},
         ('vorarlberg', 'mittelberg'): {'name': 'Mittelberg', 'definitive': True},

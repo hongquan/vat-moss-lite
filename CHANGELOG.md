@@ -2,6 +2,10 @@ Changelog following https://common-changelog.org/ convention
 
 ## Unreleased
 
+### Added
+
+- Type annotations on all public functions and module-level constants. Removed Python 2 `str_cls` compatibility shims.
+
 ### Changed
 
 - `exchange_rates.py`: Removed BGN (Bulgaria) and HRK (Croatia) from the applicable-currency filter — both countries adopted the Euro (Croatia Jan 2023, Bulgaria Jan 2025) and ECB no longer publishes those rates.

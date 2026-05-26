@@ -8,7 +8,7 @@ from xml.etree import ElementTree
 from .errors import InvalidError, WebServiceError, WebServiceUnavailableError
 
 
-def normalize(vat_id):
+def normalize(vat_id: str | None) -> str | None:
     """
     Accepts a VAT ID and normaizes it, getting rid of spaces, periods, dashes
     etc and converting it to upper case.
@@ -53,7 +53,7 @@ def normalize(vat_id):
     return vat_id
 
 
-def validate(vat_id):
+def validate(vat_id: str | None) -> tuple[str, str, str] | None:
     """
     Runs some basic checks to ensure a VAT ID looks properly formatted. If so,
     checks it against the VIES system for EU VAT IDs or data.brreg.no for
@@ -78,7 +78,7 @@ def validate(vat_id):
     vat_id = normalize(vat_id)
 
     if not vat_id:
-        return vat_id
+        return None
 
     country_prefix = vat_id[0:2]
 
@@ -208,7 +208,7 @@ def validate(vat_id):
             # Fail loudly if the XML seems to have changed
             raise WebServiceError('Unable to find <name> tag in response from VIES')
 
-        if valid_elements[0].text.lower() != 'true':
+        if (valid_elements[0].text or '').lower() != 'true':
             raise InvalidError('VAT ID is invalid')
 
         company_name = name_elements[0].text

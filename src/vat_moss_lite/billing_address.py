@@ -1,18 +1,13 @@
 import re
 from decimal import Decimal
-
-
-try:
-    # Python 2
-    str_cls = unicode
-except NameError:
-    # Python 3
-    str_cls = str
+from typing import cast
 
 from . import rates
 
 
-def calculate_rate(country_code, postal_code, city):
+def calculate_rate(
+    country_code: str, postal_code: str | None, city: str
+) -> tuple[Decimal, str, str | None]:
     """
     Calculates the VAT rate that should be collected based on address
     information provided
@@ -33,7 +28,7 @@ def calculate_rate(country_code, postal_code, city):
         A tuple of (Decimal percentage rate, country code, exception name [or None])
     """
 
-    if not country_code or not isinstance(country_code, str_cls):
+    if not country_code or not isinstance(country_code, str):
         raise ValueError('Invalidly formatted country code')
 
     country_code = country_code.strip()
@@ -43,13 +38,13 @@ def calculate_rate(country_code, postal_code, city):
     country_code = country_code.upper()
 
     if country_code not in COUNTRIES_WITHOUT_POSTAL_CODES:
-        if not postal_code or not isinstance(postal_code, str_cls):
+        if not postal_code or not isinstance(postal_code, str):
             raise ValueError('Postal code is not a string')
 
-    if not city or not isinstance(city, str_cls):
+    if not city or not isinstance(city, str):
         raise ValueError('City is not a string')
 
-    if isinstance(postal_code, str_cls):
+    if isinstance(postal_code, str):
         postal_code = re.sub('\\s+', '', postal_code)
         postal_code = postal_code.upper()
 
@@ -73,16 +68,16 @@ def calculate_rate(country_code, postal_code, city):
     exceptions = POSTAL_CODE_EXCEPTIONS[country_code]
     for matcher in exceptions:
         # Postal code-only match
-        if isinstance(matcher, str_cls):
+        if isinstance(matcher, str):
             postal_regex = matcher
             city_regex = None
         else:
-            postal_regex, city_regex = matcher
+            postal_regex, city_regex = cast(tuple[str, str], matcher)
 
-        if not re.match(postal_regex, postal_code):
+        if not re.match(postal_regex, postal_code or ''):
             continue
 
-        if city_regex and not re.search(city_regex, city):
+        if city_regex is not None and not re.search(city_regex, city):
             continue
 
         mapped_country = exceptions[matcher]['country_code']
@@ -96,7 +91,7 @@ def calculate_rate(country_code, postal_code, city):
 
         mapped_name = exceptions[matcher]['name']
 
-        rate = rates.BY_COUNTRY[mapped_country]['exceptions'][mapped_name]
+        rate = cast(Decimal, rates.BY_COUNTRY[mapped_country]['exceptions'][mapped_name])
         return (rate, mapped_country, mapped_name)
 
     return (country_default, country_code, None)
@@ -110,7 +105,9 @@ def calculate_rate(country_code, postal_code, city):
 # through multiple countries.
 #
 # These should only be used with billing addresses.
-POSTAL_CODE_EXCEPTIONS = {
+type _MatchKey = str | tuple[str, str]
+
+POSTAL_CODE_EXCEPTIONS: dict[str, dict[_MatchKey, dict[str, str]]] = {
     'AT': {
         '^6691$': {'country_code': 'AT', 'name': 'Jungholz'},
         ('^699[123]$', '\\bmittelberg\\b'): {'country_code': 'AT', 'name': 'Mittelberg'},
@@ -151,7 +148,7 @@ POSTAL_CODE_EXCEPTIONS = {
 }
 
 
-COUNTRIES_WITHOUT_POSTAL_CODES = {
+COUNTRIES_WITHOUT_POSTAL_CODES: dict[str, bool] = {
     'AE': True,
     'AG': True,
     'AN': True,

@@ -1,4 +1,10 @@
 from decimal import Decimal
+from typing import NotRequired, TypedDict
+
+
+class CountryInfo(TypedDict):
+    rate: Decimal
+    exceptions: NotRequired[dict[str, Decimal | tuple[Decimal, str, None]]]
 
 
 # The rates used here are pull from the following sources December 17, 2014:
@@ -53,7 +59,7 @@ from decimal import Decimal
 
 # There are country entries and exceptions entries for places that are listed
 # on the VAT exceptions list. A value of None means no VAT is to be collected.
-BY_COUNTRY = {
+BY_COUNTRY: dict[str, CountryInfo] = {
     'AT': {  # Austria
         'rate': Decimal('0.20'),
         'exceptions': {'Jungholz': Decimal('0.19'), 'Mittelberg': Decimal('0.19')},

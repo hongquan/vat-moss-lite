@@ -1,44 +1,43 @@
+import builtins
 from decimal import Decimal
 from email.message import Message
+from typing import Any, TypedDict
 from urllib.request import urlopen
 from xml.etree import ElementTree
 
 
 try:
-    from money import xrates
+    from money import xrates  # type: ignore[import-not-found]
 except ImportError:
     xrates = None
 
 from .errors import WebServiceError
 
 
-builtin_format = format
+class _FormattingRule(TypedDict):
+    symbol: str
+    symbol_first: bool
+    decimal_mark: str
+    thousands_separator: str
+    decimal_places: int
 
 
-def fetch():
-    """
-    Fetches the latest exchange rate info from the European Central Bank. These
-    rates need to be used for displaying invoices since some countries require
-    local currency be quoted. Also useful to store the GBP rate of the VAT
-    collected at time of purchase to prevent fluctuations in exchange rates from
-    significantly altering the amount of tax due the HMRC (if you are using them
-    for VAT MOSS).
+def fetch() -> tuple[str, dict[str, Decimal]]:
+    """Fetch the latest exchange rates from the European Central Bank.
+
+    These rates are used for invoice display since some countries require
+    the local currency. Returns rates updated on ECB business days between
+    2:15 and 3:00pm CET — cache locally rather than fetching per request.
 
     :return:
-        A dict with string keys that are currency codes and values that are
-        Decimals of the exchange rate with the base (1.0000) being the Euro
-        (EUR). The following currencies are included, based on this library
-        being build for EU and Norway VAT, plus USD for the author:
-         - CZK
-         - DKK
-         - EUR
-         - GBP
-         - HUF
-         - NOK
-         - PLN
-         - RON
-         - SEK
-         - USD
+        A tuple of (date string in YYYY-MM-DD format, rates dict). The
+        rates dict has currency-code keys and Decimal values relative to
+        EUR base (1.0000). Included currencies: CZK, DKK, EUR, GBP, HUF,
+        NOK, PLN, RON, SEK, USD.
+
+    :raises:
+        WebServiceError - If the ECB XML structure is unexpected.
+        urllib.error.URLError - If the ECB endpoint is unreachable.
     """
 
     response = urlopen('https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml')
@@ -92,8 +91,6 @@ def fetch():
     #     </Cube>
     # </gesmes:Envelope>
 
-    # If we don't explicitly recode to UTF-8, ElementTree stupidly uses
-    # ascii on Python 2.7
     envelope = ElementTree.fromstring(return_xml.encode('utf-8'))
 
     namespaces = {
@@ -103,21 +100,18 @@ def fetch():
 
     date_elements = envelope.findall('./eurofxref:Cube/eurofxref:Cube[@time]', namespaces)
     if not date_elements:
-        # Fail loudly if the XML seems to have changed
         raise WebServiceError('Unable to find <Cube time=""> tag in ECB XML')
 
-    date = date_elements[0].get('time')
-    if not isinstance(date, str):
-        date = date.decode('utf-8')
+    # XPath filtered for [@time], so the attribute is always present
+    date: str = date_elements[0].attrib['time']
 
     currency_elements = envelope.findall(
         './eurofxref:Cube/eurofxref:Cube/eurofxref:Cube[@currency][@rate]', namespaces
     )
     if not currency_elements:
-        # Fail loudly if the XML seems to have changed
         raise WebServiceError('Unable to find <Cube currency="" rate=""> tags in ECB XML')
 
-    rates = {'EUR': Decimal('1.0000')}
+    rates: dict[str, Decimal] = {'EUR': Decimal('1.0000')}
 
     applicable_currenties = {
         'CZK': True,
@@ -139,22 +133,19 @@ def fetch():
             continue
 
         rate = currency_element.attrib.get('rate')
-        rates[code] = Decimal(rate)
+        rates[code] = Decimal(rate)  # type: ignore[arg-type]
 
     return (date, rates)
 
 
-def setup_xrates(base, rates):
-    """
-    If using the Python money package, this will set up the xrates exchange
-    rate data.
+def setup_xrates(base: str, rates: dict[str, Decimal]) -> None:
+    """Configure the `money` package exchange rates from ECB data.
 
     :param base:
-        The string currency code to use as the base
+        Currency code to use as the base (use ``'EUR'`` with ECB data).
 
     :param rates:
-        A dict with keys that are string currency codes and values that are
-        a Decimal of the exchange rate for that currency.
+        Dict of currency-code → Decimal exchange rate.
     """
 
     xrates.install('money.exchange.SimpleBackend')
@@ -163,19 +154,26 @@ def setup_xrates(base, rates):
         xrates.setrate(code, value)
 
 
-def format(amount, currency=None):
-    """
-    Formats a decimal or Money object into an unambiguous string representation
-    for the purpose of invoices in English.
+def format(amount: Decimal | Any, currency: str | None = None) -> str:
+    """Format a currency amount for invoice display.
+
+    Accepts either a ``Decimal`` plus an explicit currency code, or a
+    ``money.Money`` object (which carries its own currency).
 
     :param amount:
-        A Decimal or Money object
+        A ``Decimal`` amount, or a ``Money`` object with ``.amount``
+        and ``.currency`` attributes.
 
     :param currency:
-        If the amount is a Decimal, the currency of the amount
+        Three-character currency code; required when ``amount`` is a
+        ``Decimal``, ignored when ``amount`` is a ``Money`` object.
 
     :return:
-        A string representation of the amount in the currency
+        Locale-formatted string, e.g. ``'€4.101,79'`` or ``'$4,101.79'``.
+
+    :raises:
+        ValueError - If ``currency`` is not a string, is unsupported, or
+            ``amount`` is not a ``Decimal``.
     """
 
     if currency is None and hasattr(amount, 'currency'):
@@ -202,7 +200,7 @@ def format(amount, currency=None):
 
     format_string = ',.{}f'.format(rules['decimal_places'])
 
-    result = builtin_format(amount, format_string)
+    result = builtins.format(amount, format_string)
 
     result = result.replace(',', '_')
     result = result.replace('.', '|')
@@ -218,7 +216,7 @@ def format(amount, currency=None):
     return result
 
 
-FORMATTING_RULES = {
+FORMATTING_RULES: dict[str, _FormattingRule] = {
     'BGN': {
         'symbol': ' Lev',
         'symbol_first': False,

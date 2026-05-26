@@ -1,17 +1,12 @@
 from decimal import Decimal
-
-
-try:
-    # Python 2
-    str_cls = unicode
-except NameError:
-    # Python 3
-    str_cls = str
+from typing import TypedDict
 
 from . import rates
 
 
-def calculate_rate(country_code, exception_name):
+def calculate_rate(
+    country_code: str, exception_name: str | None
+) -> tuple[Decimal, str, str | None]:
     """
     Calculates the VAT rate for a customer based on their declared country
     and any declared exception information.
@@ -30,10 +25,10 @@ def calculate_rate(country_code, exception_name):
         A tuple of (Decimal VAT rate, country_code, exception name [or None])
     """
 
-    if not country_code or not isinstance(country_code, str_cls) or len(country_code) != 2:
+    if not country_code or not isinstance(country_code, str) or len(country_code) != 2:
         raise ValueError('Invalidly formatted country code')
 
-    if exception_name and not isinstance(exception_name, str_cls):
+    if exception_name and not isinstance(exception_name, str):
         raise ValueError('Exception name is not None or a string')
 
     country_code = country_code.upper()
@@ -60,7 +55,7 @@ def calculate_rate(country_code, exception_name):
     return (rate, country_code, exception_name)
 
 
-def exceptions_by_country(country_code):
+def exceptions_by_country(country_code: str) -> list[str]:
     """
     Returns a list of exception names for the given country
 
@@ -74,7 +69,7 @@ def exceptions_by_country(country_code):
         A list of strings that are VAT exceptions for the country specified
     """
 
-    if not country_code or not isinstance(country_code, str_cls) or len(country_code) != 2:
+    if not country_code or not isinstance(country_code, str) or len(country_code) != 2:
         raise ValueError('Invalidly formatted country code')
 
     country_code = country_code.upper()
@@ -82,7 +77,13 @@ def exceptions_by_country(country_code):
     return EXCEPTIONS_BY_COUNTRY.get(country_code, [])
 
 
-def options():
+class CountryOption(TypedDict):
+    name: str
+    code: str
+    exceptions: list[str]
+
+
+def options() -> list[CountryOption]:
     """
     Return a sorted list of dicts, each containing the keys "name", "code" and
     "exceptions". These should be used to build a user interface for customers
@@ -352,7 +353,7 @@ def options():
 
 
 # The valid exception names, listed by country
-EXCEPTIONS_BY_COUNTRY = {
+EXCEPTIONS_BY_COUNTRY: dict[str, list[str]] = {
     'AT': ['Jungholz', 'Mittelberg'],
     'DE': ['Büsingen am Hochrhein', 'Heligoland'],
     'ES': ['Canary Islands', 'Ceuta', 'Melilla'],

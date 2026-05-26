@@ -1,19 +1,16 @@
 import re
 from decimal import Decimal
-
-
-try:
-    # Python 2
-    str_cls = unicode
-except NameError:
-    # Python 3
-    str_cls = str
+from typing import TypedDict, cast
 
 from . import rates
 from .errors import UndefinitiveError
 
 
-def calculate_rate(phone_number, address_country_code=None, address_exception=None):
+def calculate_rate(
+    phone_number: str,
+    address_country_code: str | None = None,
+    address_exception: str | None = None,
+) -> tuple[Decimal, str, str | None]:
     """
     Calculates the VAT rate based on a telephone number
 
@@ -41,7 +38,7 @@ def calculate_rate(phone_number, address_country_code=None, address_exception=No
     if not phone_number:
         raise ValueError('No phone number provided')
 
-    if not isinstance(phone_number, str_cls):
+    if not isinstance(phone_number, str):
         raise ValueError('Phone number is not a string')
 
     phone_number = phone_number.strip()
@@ -79,7 +76,7 @@ def calculate_rate(phone_number, address_country_code=None, address_exception=No
                 if address_exception != info['name']:
                     continue
 
-            rate = rates.BY_COUNTRY[mapped_country]['exceptions'][mapped_name]
+            rate = cast(Decimal, rates.BY_COUNTRY[mapped_country]['exceptions'][mapped_name])
             return (rate, mapped_country, mapped_name)
 
     if country_code not in rates.BY_COUNTRY:
@@ -88,7 +85,7 @@ def calculate_rate(phone_number, address_country_code=None, address_exception=No
     return (rates.BY_COUNTRY[country_code]['rate'], country_code, None)
 
 
-def _lookup_country_code(phone_number):
+def _lookup_country_code(phone_number: str) -> str | None:
     """
     Accepts an international form of a phone number (+ followed by digits),
     and returns a two-character country code.
@@ -130,7 +127,19 @@ def _lookup_country_code(phone_number):
 # The values are a list so that more specific regexes will be matched first.
 # This is necessary since sometimes multiple countries use the same
 # international calling code prefix.
-CALLING_CODE_MAPPING = {
+class _CallingCodeEntry(TypedDict):
+    regex: str
+    country_code: str
+
+
+class _CallingCodeException(TypedDict):
+    regex: str
+    country_code: str
+    name: str
+    definitive: bool
+
+
+CALLING_CODE_MAPPING: dict[str, list[_CallingCodeEntry]] = {
     '1': [
         {
             'regex': '1(204|226|236|249|250|289|306|343|365|387|403|416|418|431|437|438|450|506|514|519|548|579|581|587|600|604|613|622|633|639|644|647|655|672|677|688|705|709|742|778|780|782|807|819|825|867|873|902|905)',
@@ -420,7 +429,7 @@ CALLING_CODE_MAPPING = {
 # phone service from more than one country.
 #
 # The main dict key is the country code, as matched from CALLING_CODE_MAPPING
-CALLING_CODE_EXCEPTIONS = {
+CALLING_CODE_EXCEPTIONS: dict[str, list[_CallingCodeException]] = {
     'AT': [
         {'regex': '435676', 'country_code': 'AT', 'name': 'Jungholz', 'definitive': True},
         {'regex': '435517', 'country_code': 'AT', 'name': 'Mittelberg', 'definitive': False},
