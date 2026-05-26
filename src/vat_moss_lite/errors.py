@@ -1,16 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-try:
-    # Python 3
-    from urllib.error import URLError
-
-    str_cls = str
-except ImportError:
-    # Python 2
-    from urllib2 import URLError
-
-    str_cls = unicode
+from urllib.error import URLError
 
 
 class UndefinitiveError(ValueError):

@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import unittest
 from decimal import Decimal
-from .unittest_data import DataDecorator, data
+
 import vat_moss_lite.billing_address
+
+from .unittest_data import DataDecorator, data
 
 
 @DataDecorator
@@ -64,21 +63,21 @@ class BillingAddressTests(unittest.TestCase):
             ('it', '23030', 'Livigno', Decimal('0.0'), 'IT', 'Livigno'),
             ('IT', '00100', 'Rome', Decimal('0.22'), 'IT', None),
             ('LT', '01001', 'Vilnius', Decimal('0.21'), 'LT', None),
-            ('LU', 'L-1248', 'Luxembourg', Decimal('0.15'), 'LU', None),
+            ('LU', 'L-1248', 'Luxembourg', Decimal('0.17'), 'LU', None),
             ('LV', 'LV-1001', 'Riga', Decimal('0.21'), 'LV', None),
             ('MT', 'VLT', 'Valletta', Decimal('0.18'), 'MT', None),
             ('NL', '1000', 'Amsterdam', Decimal('0.21'), 'NL', None),
             ('PL', '00-001', 'Warsaw', Decimal('0.23'), 'PL', None),
-            ('PT', '9970', 'Santa Cruz das Flores', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', '9980-024', 'Vila do Corvo', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', '9880-352', 'Santa Cruz da Graciosa', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', '9701-101', 'Angra do Heroísmo', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', '9800-539', 'Velas', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', '9930-135', 'Lajes do Pico', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', '9900-997', 'Horta', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', '9560-045', 'Lagoa', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', '9580-539', 'Vila do Porto', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', '9000', 'Funchal', Decimal('0.0'), 'PT', 'Madeira'),
+            ('PT', '9970', 'Santa Cruz das Flores', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', '9980-024', 'Vila do Corvo', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', '9880-352', 'Santa Cruz da Graciosa', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', '9701-101', 'Angra do Heroísmo', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', '9800-539', 'Velas', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', '9930-135', 'Lajes do Pico', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', '9900-997', 'Horta', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', '9560-045', 'Lagoa', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', '9580-539', 'Vila do Porto', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', '9000', 'Funchal', Decimal('0.22'), 'PT', 'Madeira'),
             ('PT', '1149-014', 'Lisbon', Decimal('0.23'), 'PT', None),
             ('RO', '010131', 'București', Decimal('0.24'), 'RO', None),
             ('SE', 'SE-100 00', 'Stockholm', Decimal('0.25'), 'SE', None),

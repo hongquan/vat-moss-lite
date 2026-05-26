@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import unittest
 from decimal import Decimal
-from .unittest_data import DataDecorator, data
+
 import vat_moss_lite.declared_residence
+
+from .unittest_data import DataDecorator, data
 
 
 @DataDecorator
@@ -43,13 +42,13 @@ class DeclaredResidenceTests(unittest.TestCase):
             ('IT', 'Livigno', Decimal('0.0'), 'IT', 'Livigno'),
             ('IT', None, Decimal('0.22'), 'IT', None),
             ('LT', None, Decimal('0.21'), 'LT', None),
-            ('LU', None, Decimal('0.15'), 'LU', None),
+            ('LU', None, Decimal('0.17'), 'LU', None),
             ('LV', None, Decimal('0.21'), 'LV', None),
             ('MT', None, Decimal('0.18'), 'MT', None),
             ('NL', None, Decimal('0.21'), 'NL', None),
             ('PL', None, Decimal('0.23'), 'PL', None),
-            ('PT', 'Azores', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', 'Madeira', Decimal('0.0'), 'PT', 'Madeira'),
+            ('PT', 'Azores', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', 'Madeira', Decimal('0.22'), 'PT', 'Madeira'),
             ('PT', None, Decimal('0.23'), 'PT', None),
             ('RO', None, Decimal('0.24'), 'RO', None),
             ('SE', None, Decimal('0.25'), 'SE', None),

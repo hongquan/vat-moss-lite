@@ -1,20 +1,8 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-from xml.etree import ElementTree
-import cgi
 from decimal import Decimal
+from email.message import Message
+from urllib.request import urlopen
+from xml.etree import ElementTree
 
-try:
-    # Python 3
-    from urllib.request import urlopen
-
-    str_cls = str
-except ImportError:
-    # Python 2
-    from urllib2 import urlopen
-
-    str_cls = unicode
 
 try:
     from money import xrates
@@ -22,6 +10,7 @@ except ImportError:
     xrates = None
 
 from .errors import WebServiceError
+
 
 builtin_format = format
 
@@ -40,13 +29,11 @@ def fetch():
         Decimals of the exchange rate with the base (1.0000) being the Euro
         (EUR). The following currencies are included, based on this library
         being build for EU and Norway VAT, plus USD for the author:
-         - BGN
          - CZK
          - DKK
          - EUR
          - GBP
          - HUF
-         - HRK
          - NOK
          - PLN
          - RON
@@ -55,11 +42,9 @@ def fetch():
     """
 
     response = urlopen('https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml')
-    _, params = cgi.parse_header(response.headers['Content-Type'])
-    if 'charset' in params:
-        encoding = params['charset']
-    else:
-        encoding = 'utf-8'
+    msg = Message()
+    msg['content-type'] = response.headers['Content-Type']
+    encoding = msg.get_param('charset') or 'utf-8'
 
     return_xml = response.read().decode(encoding)
 
@@ -122,7 +107,7 @@ def fetch():
         raise WebServiceError('Unable to find <Cube time=""> tag in ECB XML')
 
     date = date_elements[0].get('time')
-    if not isinstance(date, str_cls):
+    if not isinstance(date, str):
         date = date.decode('utf-8')
 
     currency_elements = envelope.findall(
@@ -135,12 +120,10 @@ def fetch():
     rates = {'EUR': Decimal('1.0000')}
 
     applicable_currenties = {
-        'BGN': True,
         'CZK': True,
         'DKK': True,
         'EUR': True,
         'GBP': True,
-        'HRK': True,
         'HUF': True,
         'NOK': True,
         'PLN': True,
@@ -202,15 +185,14 @@ def format(amount, currency=None):
     if not isinstance(amount, Decimal) and hasattr(amount, 'amount'):
         amount = amount.amount
 
-    if not isinstance(currency, str_cls):
+    if not isinstance(currency, str):
         raise ValueError('The currency specified is not a string')
 
     if currency not in FORMATTING_RULES:
         valid_currencies = sorted(FORMATTING_RULES.keys())
         formatted_currencies = ', '.join(valid_currencies)
         raise ValueError(
-            'The currency specified, "%s", is not a supported currency: %s'
-            % (currency, formatted_currencies)
+            f'The currency specified, "{currency}", is not a supported currency: {formatted_currencies}'
         )
 
     if not isinstance(amount, Decimal):
@@ -218,7 +200,7 @@ def format(amount, currency=None):
 
     rules = FORMATTING_RULES[currency]
 
-    format_string = ',.%sf' % rules['decimal_places']
+    format_string = ',.{}f'.format(rules['decimal_places'])
 
     result = builtin_format(amount, format_string)
 

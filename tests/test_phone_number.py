@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import unittest
 from decimal import Decimal
-from .unittest_data import DataDecorator, data
+
 import vat_moss_lite.phone_number
+
+from .unittest_data import DataDecorator, data
 
 
 @DataDecorator
@@ -74,13 +73,13 @@ class PhoneNumberTests(unittest.TestCase):
             ('+39 0342 528111', 'IT', None, Decimal('0.22'), 'IT', None),
             ('+39 06 49971', 'IT', None, Decimal('0.22'), 'IT', None),
             ('+370 5 231 4930', 'LT', None, Decimal('0.21'), 'LT', None),
-            ('+352 22 28 09', 'LU', None, Decimal('0.15'), 'LU', None),
+            ('+352 22 28 09', 'LU', None, Decimal('0.17'), 'LU', None),
             ('+371 26 448 632', 'LV', None, Decimal('0.21'), 'LV', None),
             ('+356 2122 0536', 'MT', None, Decimal('0.18'), 'MT', None),
             ('+31 20 522 1010', 'NL', None, Decimal('0.21'), 'NL', None),
             ('+48 22 529 87 77', 'PL', None, Decimal('0.23'), 'PL', None),
-            ('+351 296 306 508', 'PT', 'Azores', Decimal('0.0'), 'PT', 'Azores'),
-            ('+351 291 215 130', 'PT', 'Madeira', Decimal('0.0'), 'PT', 'Madeira'),
+            ('+351 296 306 508', 'PT', 'Azores', Decimal('0.18'), 'PT', 'Azores'),
+            ('+351 291 215 130', 'PT', 'Madeira', Decimal('0.22'), 'PT', 'Madeira'),
             ('+351 21 346 1381', 'PT', None, Decimal('0.23'), 'PT', None),
             ('+40 21 310 1522', 'RO', None, Decimal('0.24'), 'RO', None),
             ('+46 8 402 61 30', 'SE', None, Decimal('0.25'), 'SE', None),

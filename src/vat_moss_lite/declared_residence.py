@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from decimal import Decimal
+
 
 try:
     # Python 2
@@ -49,7 +47,7 @@ def calculate_rate(country_code, exception_name):
         return (country_info['rate'], country_code, None)
 
     if exception_name not in country_info['exceptions']:
-        raise ValueError('"%s" is not a valid exception for %s' % (exception_name, country_code))
+        raise ValueError(f'"{exception_name}" is not a valid exception for {country_code}')
 
     rate_info = country_info['exceptions'][exception_name]
     if isinstance(rate_info, Decimal):

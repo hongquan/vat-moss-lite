@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import unittest
 from decimal import Decimal
-from .unittest_data import DataDecorator, data
+
 import vat_moss_lite.geoip2
+
+from .unittest_data import DataDecorator, data
 
 
 @DataDecorator
@@ -103,15 +102,15 @@ class Geoip2Tests(unittest.TestCase):
             ('IT', 'Lombardy', 'Livigno', 'IT', None, Decimal('0.0'), 'IT', 'Livigno'),
             ('IT', 'Lombardy', 'Cologne', 'IT', None, Decimal('0.22'), 'IT', None),
             ('LT', 'Vilnius County', 'Vilnius', 'LT', None, Decimal('0.21'), 'LT', None),
-            ('LU', 'District de Luxembourg', 'Luxembourg', 'LU', None, Decimal('0.15'), 'LU', None),
+            ('LU', 'District de Luxembourg', 'Luxembourg', 'LU', None, Decimal('0.17'), 'LU', None),
             ('LV', 'Riga', 'Riga', 'LV', None, Decimal('0.21'), 'LV', None),
             ('MT', 'Il-Belt Valletta', 'Valletta', 'MT', None, Decimal('0.18'), 'MT', None),
             ('NL', 'North Holland', 'Amsterdam', 'NL', None, Decimal('0.21'), 'NL', None),
             ('PL', 'Masovian Voivodeship', 'Warsaw', 'PL', None, Decimal('0.23'), 'PL', None),
-            ('PT', 'Azores', 'Lajes', 'PT', 'Azores', Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', 'Azores', 'Lajes', 'PT', None, Decimal('0.0'), 'PT', 'Azores'),
-            ('PT', 'Madeira', 'Santa Cruz', 'PT', 'Madeira', Decimal('0.0'), 'PT', 'Madeira'),
-            ('PT', 'Madeira', 'Santa Cruz', 'PT', None, Decimal('0.0'), 'PT', 'Madeira'),
+            ('PT', 'Azores', 'Lajes', 'PT', 'Azores', Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', 'Azores', 'Lajes', 'PT', None, Decimal('0.18'), 'PT', 'Azores'),
+            ('PT', 'Madeira', 'Santa Cruz', 'PT', 'Madeira', Decimal('0.22'), 'PT', 'Madeira'),
+            ('PT', 'Madeira', 'Santa Cruz', 'PT', None, Decimal('0.22'), 'PT', 'Madeira'),
             ('PT', 'Lisbon', 'Lisbon', 'PT', None, Decimal('0.23'), 'PT', None),
             ('RO', 'Bucuresti', 'Bucharest', 'RO', None, Decimal('0.24'), 'RO', None),
             ('SE', 'Stockholm', 'Stockholm', 'SE', None, Decimal('0.25'), 'SE', None),

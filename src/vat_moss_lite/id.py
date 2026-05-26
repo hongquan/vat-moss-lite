@@ -1,22 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-import re
 import json
+import re
+from email.message import Message
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
 from xml.etree import ElementTree
-import cgi
-
-try:
-    # Python 3
-    from urllib.request import Request, urlopen
-    from urllib.error import HTTPError
-
-    str_cls = str
-except ImportError:
-    # Python 2
-    from urllib2 import Request, urlopen, HTTPError
-
-    str_cls = unicode
 
 from .errors import InvalidError, WebServiceError, WebServiceUnavailableError
 
@@ -41,7 +28,7 @@ def normalize(vat_id):
     if not vat_id:
         return None
 
-    if not isinstance(vat_id, str_cls):
+    if not isinstance(vat_id, str):
         raise ValueError('VAT ID is not a string')
 
     if len(vat_id) < 3:
@@ -98,90 +85,33 @@ def validate(vat_id):
     number = vat_id[2:]
 
     if not re.match(ID_PATTERNS[country_prefix]['regex'], number):
-        raise InvalidError(
-            'VAT ID does not appear to be properly formatted for %s' % country_prefix
-        )
+        raise InvalidError(f'VAT ID does not appear to be properly formatted for {country_prefix}')
 
     if country_prefix == 'NO':
         organization_number = number.replace('MVA', '')
-        validation_url = 'http://data.brreg.no/enhetsregisteret/enhet/%s.json' % organization_number
+        validation_url = f'https://data.brreg.no/enhetsregisteret/api/enheter/{organization_number}'
 
         try:
-            response = urlopen(validation_url)
-            _, params = cgi.parse_header(response.headers['Content-Type'])
-            if 'charset' in params:
-                encoding = params['charset']
-            else:
-                encoding = 'utf-8'
+            brreg_request = Request(validation_url)
+            brreg_request.add_header('Accept', 'application/json')
+            response = urlopen(brreg_request)
+            msg = Message()
+            msg['content-type'] = response.headers['Content-Type']
+            encoding = msg.get_param('charset') or 'utf-8'
 
             return_json = response.read().decode(encoding)
 
-            # Example response:
-            #
-            # {
-            #     "organisasjonsnummer": 974760673,
-            #     "navn": "REGISTERENHETEN I BRØNNØYSUND",
-            #     "registreringsdatoEnhetsregisteret": "1995-08-09",
-            #     "organisasjonsform": "ORGL",
-            #     "hjemmeside": "www.brreg.no",
-            #     "registrertIFrivillighetsregisteret": "N",
-            #     "registrertIMvaregisteret": "N",
-            #     "registrertIForetaksregisteret": "N",
-            #     "registrertIStiftelsesregisteret": "N",
-            #     "antallAnsatte": 562,
-            #     "institusjonellSektorkode": {
-            #         "kode": "6100",
-            #         "beskrivelse": "Statsforvaltningen"
-            #     },
-            #     "naeringskode1": {
-            #         "kode": "84.110",
-            #         "beskrivelse": "Generell offentlig administrasjon"
-            #     },
-            #     "postadresse": {
-            #         "adresse": "Postboks 900",
-            #         "postnummer": "8910",
-            #         "poststed": "BRØNNØYSUND",
-            #         "kommunenummer": "1813",
-            #         "kommune": "BRØNNØY",
-            #         "landkode": "NO",
-            #         "land": "Norge"
-            #     },
-            #     "forretningsadresse": {
-            #         "adresse": "Havnegata 48",
-            #         "postnummer": "8900",
-            #         "poststed": "BRØNNØYSUND",
-            #         "kommunenummer": "1813",
-            #         "kommune": "BRØNNØY",
-            #         "landkode": "NO",
-            #         "land": "Norge"
-            #     },
-            #     "konkurs": "N",
-            #     "underAvvikling": "N",
-            #     "underTvangsavviklingEllerTvangsopplosning": "N",
-            #     "overordnetEnhet": 912660680,
-            #     "links": [
-            #         {
-            #             "rel": "self",
-            #             "href": "http://data.brreg.no/enhetsregisteret/enhet/974760673"
-            #         },
-            #         {
-            #             "rel": "overordnetEnhet",
-            #             "href": "http://data.brreg.no/enhetsregisteret/enhet/912660680"
-            #         }
-            #     ]
-            # }
-
             info = json.loads(return_json)
 
-            # This should never happen, but keeping it incase the API is changed
-            if 'organisasjonsnummer' not in info or info['organisasjonsnummer'] != int(
-                organization_number
+            if (
+                'organisasjonsnummer' not in info
+                or info['organisasjonsnummer'] != organization_number
             ):
                 raise WebServiceError(
                     'No or different value for the "organisasjonsnummer" key in response from data.brreg.no'
                 )
 
-            company_name = info['organisasjonsnummer']
+            company_name = info['navn']
 
         except HTTPError as e:
             # If a number is invalid, we get a 404
@@ -193,20 +123,20 @@ def validate(vat_id):
 
     # EU countries
     else:
-        post_data = """
+        post_data = f"""
             <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:ec.europa.eu:taxud:vies:services:checkVat:types">
                <soapenv:Header/>
                <soapenv:Body>
                   <urn:checkVat>
-                     <urn:countryCode>%s</urn:countryCode>
-                     <urn:vatNumber>%s</urn:vatNumber>
+                     <urn:countryCode>{country_prefix}</urn:countryCode>
+                     <urn:vatNumber>{number}</urn:vatNumber>
                   </urn:checkVat>
                </soapenv:Body>
             </soapenv:Envelope>
-        """ % (country_prefix, number)
+        """
 
-        request = Request('http://ec.europa.eu/taxation_customs/vies/services/checkVatService')
-        request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8')
+        request = Request('https://ec.europa.eu/taxation_customs/vies/services/checkVatService')
+        request.add_header('Content-Type', 'text/xml; charset=utf-8')
 
         try:
             response = urlopen(request, post_data.encode('utf-8'))
@@ -218,11 +148,9 @@ def validate(vat_id):
             # If we get anything but a 500 we want the exception to be recorded
             raise
 
-        _, params = cgi.parse_header(response.headers['Content-Type'])
-        if 'charset' in params:
-            encoding = params['charset']
-        else:
-            encoding = 'utf-8'
+        msg = Message()
+        msg['content-type'] = response.headers['Content-Type']
+        encoding = msg.get_param('charset') or 'utf-8'
 
         return_xml = response.read().decode(encoding)
 
@@ -257,6 +185,19 @@ def validate(vat_id):
             'soap': 'http://schemas.xmlsoap.org/soap/envelope/',
             'vat': 'urn:ec.europa.eu:taxud:vies:services:checkVat:types',
         }
+
+        fault_elements = envelope.findall('./soap:Body/soap:Fault', namespaces)
+        if fault_elements:
+            faultstring = fault_elements[0].findtext('faultstring') or ''
+            if faultstring in (
+                'MS_UNAVAILABLE',
+                'MS_MAX_CONCURRENT_REQ',
+                'SERVICE_UNAVAILABLE',
+                'TIMEOUT',
+            ):
+                raise WebServiceUnavailableError('VAT ID validation is not currently available')
+            raise InvalidError('VAT ID is invalid')
+
         valid_elements = envelope.findall('./soap:Body/vat:checkVatResponse/vat:valid', namespaces)
         if not valid_elements:
             # Fail loudly if the XML seems to have changed

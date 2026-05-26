@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 try:
     # Python 2
     str_cls = unicode
@@ -8,22 +5,22 @@ except NameError:
     # Python 3
     str_cls = str
 
-from decimal import Decimal
 import unittest
-from .unittest_data import DataDecorator, data
+from decimal import Decimal
+
 import vat_moss_lite.exchange_rates
+
+from .unittest_data import DataDecorator, data
 
 
 @DataDecorator
 class ExchangeRatesTests(unittest.TestCase):
     def test_fetch(self):
         valid_currency_codes = [
-            'BGN',
             'CZK',
             'DKK',
             'EUR',
             'GBP',
-            'HRK',
             'HUF',
             'NOK',
             'PLN',

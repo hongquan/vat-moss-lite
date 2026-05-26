@@ -1,4 +1,6 @@
-# vat_moss_lite
+# vat-moss-lite
+
+[![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
 
 A Python library for VAT MOSS tasks required of non-EU companies selling
 software to customers in the EU and Norway. Functionality includes:
@@ -37,11 +39,11 @@ Hopefully the information below will prove useful to others:
 
 ## Dependencies
 
-Python 2.7, 3.3 or 3.4. *No third-party packages required.*
+Python 3.13+. *No third-party packages required.*
 
 ## Version
 
-0.11.0 - [changelog](changelog.md)
+0.11.0 - [changelog](CHANGELOG.md)
 
 ## Installation
 

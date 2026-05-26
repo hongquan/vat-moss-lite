@@ -27,5 +27,5 @@ My current approach to VAT place of supply proof and rate selection is to:
  7. Once the customer has successfully checked out, generate an invoice that
     meets VAT requirements. This means including things like your VAT ID for
     EU customers and including the customers VAT ID (if provided), along with
-    some other country-specific currency requirements. See the 
+    some other country-specific currency requirements. See the
     [VAT MOSS Overview](overview.md) for more information.
