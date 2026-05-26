@@ -6,7 +6,7 @@ from decimal import Decimal
 try:
     # Python 2
     str_cls = unicode
-except (NameError):
+except NameError:
     # Python 3
     str_cls = str
 
@@ -14,7 +14,9 @@ from . import rates
 from .errors import UndefinitiveError
 
 
-def calculate_rate(country_code, subdivision, city, address_country_code=None, address_exception=None):
+def calculate_rate(
+    country_code, subdivision, city, address_country_code=None, address_exception=None
+):
     """
     Calculates the VAT rate from the data returned by a GeoLite2 database
 
@@ -85,7 +87,9 @@ def calculate_rate(country_code, subdivision, city, address_country_code=None, a
         exception_name = info['name']
         if not info['definitive']:
             if address_country_code is None:
-                raise UndefinitiveError('It is not possible to determine the users VAT rates based on the information provided')
+                raise UndefinitiveError(
+                    'It is not possible to determine the users VAT rates based on the information provided'
+                )
 
             if address_country_code != country_code:
                 continue
@@ -109,67 +113,34 @@ def calculate_rate(country_code, subdivision, city, address_country_code=None, a
 # methods must be used to obtain place of supply proof.
 GEOIP2_EXCEPTIONS = {
     'AT': {
-        ('tyrol', 'reutte'): {
-            'name': 'Jungholz',
-            'definitive': False
-        },
-        ('vorarlberg', 'mittelberg'): {
-            'name': 'Mittelberg',
-            'definitive': True
-        }
+        ('tyrol', 'reutte'): {'name': 'Jungholz', 'definitive': False},
+        ('vorarlberg', 'mittelberg'): {'name': 'Mittelberg', 'definitive': True},
     },
     'DE': {
         ('baden-württemberg region', 'konstanz'): {
             'name': 'Büsingen am Hochrhein',
-            'definitive': False
+            'definitive': False,
         },
-        ('schleswig-holstein', 'pinneberg'): {
-            'name': 'Heligoland',
-            'definitive': False
-        }
+        ('schleswig-holstein', 'pinneberg'): {'name': 'Heligoland', 'definitive': False},
     },
     'ES': {
-        'canary islands': {
-            'name': 'Canary Islands',
-            'definitive': True
-        },
-        'ceuta': {
-            'name': 'Ceuta',
-            'definitive': True
-        },
-        'melilla': {
-            'name': 'Melilla',
-            'definitive': True
-        }
+        'canary islands': {'name': 'Canary Islands', 'definitive': True},
+        'ceuta': {'name': 'Ceuta', 'definitive': True},
+        'melilla': {'name': 'Melilla', 'definitive': True},
     },
     'GR': {
         # There is no direct entry for Mount Athos, so we just flag the
         # Central Macedonia region since it is part of that
-        'central macedonia': {
-            'name': 'Mount Athos',
-            'definitive': False
-        }
+        'central macedonia': {'name': 'Mount Athos', 'definitive': False}
     },
     'IT': {
-        ('lombardy', 'livigno'): {
-            'name': 'Livigno',
-            'definitive': True
-        },
+        ('lombardy', 'livigno'): {'name': 'Livigno', 'definitive': True},
         # There are no entries that cover Campione d'Italia, so instead we
         # just flag the whole region of Lombardy as not definitive.
-        'lombardy': {
-            'name': "Campione d'Italia",
-            'definitive': False
-        }
+        'lombardy': {'name': "Campione d'Italia", 'definitive': False},
     },
     'PT': {
-        'azores': {
-            'name': 'Azores',
-            'definitive': True
-        },
-        'madeira': {
-            'name': 'Madeira',
-            'definitive': True
-        }
-    }
+        'azores': {'name': 'Azores', 'definitive': True},
+        'madeira': {'name': 'Madeira', 'definitive': True},
+    },
 }

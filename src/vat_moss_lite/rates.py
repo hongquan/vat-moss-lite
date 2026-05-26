@@ -59,10 +59,7 @@ from decimal import Decimal
 BY_COUNTRY = {
     'AT': {  # Austria
         'rate': Decimal('0.20'),
-        'exceptions': {
-            'Jungholz': Decimal('0.19'),
-            'Mittelberg': Decimal('0.19')
-        }
+        'exceptions': {'Jungholz': Decimal('0.19'), 'Mittelberg': Decimal('0.19')},
     },
     'BE': {  # Belgium
         'rate': Decimal('0.21')
@@ -78,10 +75,7 @@ BY_COUNTRY = {
     },
     'DE': {  # Germany
         'rate': Decimal('0.19'),
-        'exceptions': {
-            'Büsingen am Hochrhein': Decimal('0.0'),
-            'Heligoland': Decimal('0.0')
-        }
+        'exceptions': {'Büsingen am Hochrhein': Decimal('0.0'), 'Heligoland': Decimal('0.0')},
     },
     'DK': {  # Denmark
         'rate': Decimal('0.25')
@@ -94,8 +88,8 @@ BY_COUNTRY = {
         'exceptions': {
             'Canary Islands': Decimal('0.0'),
             'Ceuta': Decimal('0.0'),
-            'Melilla': Decimal('0.0')
-        }
+            'Melilla': Decimal('0.0'),
+        },
     },
     'FI': {  # Finland
         'rate': Decimal('0.24')
@@ -108,14 +102,12 @@ BY_COUNTRY = {
         'exceptions': {
             # UK RAF Bases in Cyprus are taxed at Cyprus rate
             'Akrotiri': (Decimal('0.19'), 'CY', None),
-            'Dhekelia': (Decimal('0.19'), 'CY', None)
-        }
+            'Dhekelia': (Decimal('0.19'), 'CY', None),
+        },
     },
     'GR': {  # Greece
         'rate': Decimal('0.23'),
-        'exceptions': {
-            'Mount Athos': Decimal('0.0')
-        }
+        'exceptions': {'Mount Athos': Decimal('0.0')},
     },
     'HR': {  # Croatia
         'rate': Decimal('0.25')
@@ -128,10 +120,7 @@ BY_COUNTRY = {
     },
     'IT': {  # Italy
         'rate': Decimal('0.22'),
-        'exceptions': {
-            "Campione d'Italia": Decimal('0.0'),
-            'Livigno': Decimal('0.0')
-        }
+        'exceptions': {"Campione d'Italia": Decimal('0.0'), 'Livigno': Decimal('0.0')},
     },
     'LT': {  # Lithuania
         'rate': Decimal('0.21')
@@ -153,10 +142,7 @@ BY_COUNTRY = {
     },
     'PT': {  # Portugal
         'rate': Decimal('0.23'),
-        'exceptions': {
-            'Azores': Decimal('0.18'),
-            'Madeira': Decimal('0.22')
-        }
+        'exceptions': {'Azores': Decimal('0.18'), 'Madeira': Decimal('0.22')},
     },
     'RO': {  # Romania
         'rate': Decimal('0.24')
@@ -170,7 +156,6 @@ BY_COUNTRY = {
     'SK': {  # Slovakia
         'rate': Decimal('0.20')
     },
-
     # Countries associated with EU countries that have a special VAT rate
     'MC': {  # Monaco - France
         'rate': Decimal('0.20')
@@ -178,10 +163,8 @@ BY_COUNTRY = {
     'IM': {  # Isle of Man - United Kingdom
         'rate': Decimal('0.20')
     },
-
     # Non-EU with their own VAT collection requirements
     'NO': {  # Norway
         'rate': Decimal('0.25')
-    }
+    },
 }
-

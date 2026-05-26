@@ -7,7 +7,7 @@ from decimal import Decimal
 try:
     # Python 2
     str_cls = unicode
-except (NameError):
+except NameError:
     # Python 3
     str_cls = str
 
@@ -114,98 +114,42 @@ def calculate_rate(country_code, postal_code, city):
 # These should only be used with billing addresses.
 POSTAL_CODE_EXCEPTIONS = {
     'AT': {
-        '^6691$': {
-            'country_code': 'AT',
-            'name': 'Jungholz'
-        },
-        ('^699[123]$', '\\bmittelberg\\b'): {
-            'country_code': 'AT',
-            'name': 'Mittelberg'
-        }
+        '^6691$': {'country_code': 'AT', 'name': 'Jungholz'},
+        ('^699[123]$', '\\bmittelberg\\b'): {'country_code': 'AT', 'name': 'Mittelberg'},
     },
     'CH': {
-        '^8238$': {
-            'country_code': 'DE',
-            'name': 'Büsingen am Hochrhein'
-        },
-        '^6911$': {
-            'country_code': 'IT',
-            'name': "Campione d'Italia"
-        },
+        '^8238$': {'country_code': 'DE', 'name': 'Büsingen am Hochrhein'},
+        '^6911$': {'country_code': 'IT', 'name': "Campione d'Italia"},
         # The Italian city of Domodossola has a Swiss post office also
-        '^3907$': {
-            'country_code': 'IT'
-        }
+        '^3907$': {'country_code': 'IT'},
     },
     'DE': {
-        '^87491$': {
-            'country_code': 'AT',
-            'name': 'Jungholz'
-        },
-        ('^8756[789]$', '\\bmittelberg\\b'): {
-            'country_code': 'AT',
-            'name': 'Mittelberg'
-        },
-        '^78266$': {
-            'country_code': 'DE',
-            'name': 'Büsingen am Hochrhein'
-        },
-        '^27498$': {
-            'country_code': 'DE',
-            'name': 'Heligoland'
-        }
+        '^87491$': {'country_code': 'AT', 'name': 'Jungholz'},
+        ('^8756[789]$', '\\bmittelberg\\b'): {'country_code': 'AT', 'name': 'Mittelberg'},
+        '^78266$': {'country_code': 'DE', 'name': 'Büsingen am Hochrhein'},
+        '^27498$': {'country_code': 'DE', 'name': 'Heligoland'},
     },
     'ES': {
-        '^(5100[1-5]|5107[0-1]|51081)$': {
-            'country_code': 'ES',
-            'name': 'Ceuta'
-        },
-        '^(5200[0-6]|5207[0-1]|52081)$': {
-            'country_code': 'ES',
-            'name': 'Melilla'
-        },
-        '^(35\\d{3}|38\\d{3})$': {
-            'country_code': 'ES',
-            'name': 'Canary Islands'
-        }
+        '^(5100[1-5]|5107[0-1]|51081)$': {'country_code': 'ES', 'name': 'Ceuta'},
+        '^(5200[0-6]|5207[0-1]|52081)$': {'country_code': 'ES', 'name': 'Melilla'},
+        '^(35\\d{3}|38\\d{3})$': {'country_code': 'ES', 'name': 'Canary Islands'},
     },
     # The UK RAF bases in Cyprus are taxed at the Cyprus rate
     'GB': {
         # Akrotiri
-        '^BFPO57|BF12AT$': {
-            'country_code': 'CY'
-        },
+        '^BFPO57|BF12AT$': {'country_code': 'CY'},
         # Dhekelia
-        '^BFPO58|BF12AU$': {
-            'country_code': 'CY'
-        }
+        '^BFPO58|BF12AU$': {'country_code': 'CY'},
     },
-    'GR': {
-        '^63086$': {
-            'country_code': 'GR',
-            'name': 'Mount Athos'
-        }
-    },
+    'GR': {'^63086$': {'country_code': 'GR', 'name': 'Mount Athos'}},
     'IT': {
-        ('^22060$', '\\bcampione\\b'): {
-            'country_code': 'IT',
-            'name': "Campione d'Italia"
-        },
-        ('^23030$', '\\blivigno\\b'): {
-            'country_code': 'IT',
-            'name': 'Livigno'
-        }
+        ('^22060$', '\\bcampione\\b'): {'country_code': 'IT', 'name': "Campione d'Italia"},
+        ('^23030$', '\\blivigno\\b'): {'country_code': 'IT', 'name': 'Livigno'},
     },
     'PT': {
-        '^9[0-4]\\d{2,}$': {
-            'country_code': 'PT',
-            'name': 'Madeira'
-        },
-        '^9[5-9]\\d{2,}$': {
-            'country_code': 'PT',
-            'name': 'Azores'
-        }
-    }
+        '^9[0-4]\\d{2,}$': {'country_code': 'PT', 'name': 'Madeira'},
+        '^9[5-9]\\d{2,}$': {'country_code': 'PT', 'name': 'Azores'},
+    },
 }
 
 
@@ -276,5 +220,5 @@ COUNTRIES_WITHOUT_POSTAL_CODES = {
     'VU': True,
     'YE': True,
     'ZA': True,
-    'ZW': True
+    'ZW': True,
 }

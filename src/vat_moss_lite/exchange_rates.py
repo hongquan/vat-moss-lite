@@ -8,18 +8,21 @@ from decimal import Decimal
 try:
     # Python 3
     from urllib.request import urlopen
+
     str_cls = str
-except (ImportError):
+except ImportError:
     # Python 2
     from urllib2 import urlopen
+
     str_cls = unicode
 
 try:
     from money import xrates
-except (ImportError):
+except ImportError:
     xrates = None
 
 from .errors import WebServiceError
+
 builtin_format = format
 
 
@@ -110,7 +113,7 @@ def fetch():
 
     namespaces = {
         'gesmes': 'http://www.gesmes.org/xml/2002-08-01',
-        'eurofxref': 'http://www.ecb.int/vocabulary/2002-08-01/eurofxref'
+        'eurofxref': 'http://www.ecb.int/vocabulary/2002-08-01/eurofxref',
     }
 
     date_elements = envelope.findall('./eurofxref:Cube/eurofxref:Cube[@time]', namespaces)
@@ -122,14 +125,14 @@ def fetch():
     if not isinstance(date, str_cls):
         date = date.decode('utf-8')
 
-    currency_elements = envelope.findall('./eurofxref:Cube/eurofxref:Cube/eurofxref:Cube[@currency][@rate]', namespaces)
+    currency_elements = envelope.findall(
+        './eurofxref:Cube/eurofxref:Cube/eurofxref:Cube[@currency][@rate]', namespaces
+    )
     if not currency_elements:
         # Fail loudly if the XML seems to have changed
         raise WebServiceError('Unable to find <Cube currency="" rate=""> tags in ECB XML')
 
-    rates = {
-        'EUR': Decimal('1.0000')
-    }
+    rates = {'EUR': Decimal('1.0000')}
 
     applicable_currenties = {
         'BGN': True,
@@ -143,7 +146,7 @@ def fetch():
         'PLN': True,
         'RON': True,
         'SEK': True,
-        'USD': True
+        'USD': True,
     }
 
     for currency_element in currency_elements:
@@ -205,7 +208,10 @@ def format(amount, currency=None):
     if currency not in FORMATTING_RULES:
         valid_currencies = sorted(FORMATTING_RULES.keys())
         formatted_currencies = ', '.join(valid_currencies)
-        raise ValueError('The currency specified, "%s", is not a supported currency: %s' % (currency, formatted_currencies))
+        raise ValueError(
+            'The currency specified, "%s", is not a supported currency: %s'
+            % (currency, formatted_currencies)
+        )
 
     if not isinstance(amount, Decimal):
         raise ValueError('The amount specified is not a Decimal')
@@ -236,83 +242,83 @@ FORMATTING_RULES = {
         'symbol_first': False,
         'decimal_mark': '.',
         'thousands_separator': ',',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'CZK': {
         'symbol': ' Kč',
         'symbol_first': False,
         'decimal_mark': ',',
         'thousands_separator': '.',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'DKK': {
         'symbol': ' Dkr',
         'symbol_first': False,
         'decimal_mark': ',',
         'thousands_separator': '.',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'EUR': {
         'symbol': '€',
         'symbol_first': True,
         'decimal_mark': ',',
         'thousands_separator': '.',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'GBP': {
         'symbol': '£',
         'symbol_first': True,
         'decimal_mark': '.',
         'thousands_separator': ',',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'HRK': {
         'symbol': ' Kn',
         'symbol_first': False,
         'decimal_mark': ',',
         'thousands_separator': '.',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'HUF': {
         'symbol': ' Ft',
         'symbol_first': False,
         'decimal_mark': ',',
         'thousands_separator': '.',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'NOK': {
         'symbol': ' Nkr',
         'symbol_first': False,
         'decimal_mark': ',',
         'thousands_separator': '.',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'PLN': {
         'symbol': ' Zł',
         'symbol_first': False,
         'decimal_mark': ',',
         'thousands_separator': ' ',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'RON': {
         'symbol': ' Lei',
         'symbol_first': False,
         'decimal_mark': ',',
         'thousands_separator': '.',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'SEK': {
         'symbol': ' Skr',
         'symbol_first': False,
         'decimal_mark': ',',
         'thousands_separator': ' ',
-        'decimal_places': 2
+        'decimal_places': 2,
     },
     'USD': {
         'symbol': '$',
         'symbol_first': True,
         'decimal_mark': '.',
         'thousands_separator': ',',
-        'decimal_places': 2
-    }
+        'decimal_places': 2,
+    },
 }

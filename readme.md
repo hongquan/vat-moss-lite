@@ -1,4 +1,4 @@
-# vat_moss
+# vat_moss_lite
 
 A Python library for VAT MOSS tasks required of non-EU companies selling
 software to customers in the EU and Norway. Functionality includes:
@@ -46,7 +46,7 @@ Python 2.7, 3.3 or 3.4. *No third-party packages required.*
 ## Installation
 
 ```bash
-pip install vat_moss
+pip install vat_moss_lite
 ```
 
 ## API
@@ -69,7 +69,7 @@ The user's VAT Rate can be determined by processing a payment and using the
 billing address from the payment provider.
 
 The method signature is
-`vat_moss.billing_address.calculate_rate(country_code, postal_code, city)`.
+`vat_moss_lite.billing_address.calculate_rate(country_code, postal_code, city)`.
 This will return a tuple of
 `(Decimal rate, country code, exception name or None)`. Examples:
 
@@ -82,7 +82,7 @@ the end of http://ec.europa.eu/taxation_customs/resources/documents/taxation/vat
 for a full list.
 
 ```python
-import vat_moss.billing_address
+import vat_moss_lite.billing_address
 
 try:
     # Values from payment provider
@@ -90,7 +90,7 @@ try:
     postal_code = '01950'
     city = 'Newburyport'
 
-    result = vat_moss.billing_address.calculate_rate(country_code, postal_code, city)
+    result = vat_moss_lite.billing_address.calculate_rate(country_code, postal_code, city)
     rate, country_code, exception_name = result
 
     # Save place of supply proof
@@ -105,13 +105,13 @@ name, detected rate and any exception name.
 ### Determine VAT Rate from Declared Residence
 
 The user's VAT Rate can be determined by prompting the user with a list of
-valid countries obtained from `vat_moss.declared_residence.options()`. If the
+valid countries obtained from `vat_moss_lite.declared_residence.options()`. If the
 user chooses a country with one or more exceptions, the user should be
 presented with another list of "None" and each exception name. This should be
 labeled something like: "Special VAT Rate".
 
 The method signature to get the appropriate rate is
-`vat_moss.declared_residence.calculate_rate(country_code, exception_name)`.
+`vat_moss_lite.declared_residence.calculate_rate(country_code, exception_name)`.
 This will return a tuple of
 `(Decimal rate, country code, exception name or None)`. Examples:
 
@@ -124,7 +124,7 @@ the end of http://ec.europa.eu/taxation_customs/resources/documents/taxation/vat
 for a full list.
 
 ```python
-import vat_moss.declared_residence
+import vat_moss_lite.declared_residence
 
 try:
     # Loop through this list of dicts and build a <select> using the 'name' key
@@ -133,13 +133,13 @@ try:
     # write some JS to show a checkbox if the selected country has exceptions,
     # and then present the user with another <select> allowing then to pick
     # "None" or one of the exception names.
-    residence_options = vat_moss.declared_residence.options()
+    residence_options = vat_moss_lite.declared_residence.options()
 
     # Values from user input
     country_code = 'DE'
     exception_name = 'Heligoland'
 
-    result = vat_moss.declared_residence.calculate_rate(country_code, exception_name)
+    result = vat_moss_lite.declared_residence.calculate_rate(country_code, exception_name)
     rate, country_code, exception_name = result
 
     # Save place of supply proof
@@ -165,11 +165,11 @@ available.
 
 Once you have the data, you need to feed the country code, subdivision name and
 city name into the method
-`vat_moss.geoip2.calculate_rate(country_code, subdivision, city, address_country_code, address_exception)`.
+`vat_moss_lite.geoip2.calculate_rate(country_code, subdivision, city, address_country_code, address_exception)`.
 The `subdivision` should be the first subdivision name from the GeoLite2
 database. The `address_country_code` and `address_exception` should be from
-`vat_moss.billing_address.calculate_rate()` or
-`vat_moss.declared_residence.calculate_rate()`. This information is necessary
+`vat_moss_lite.billing_address.calculate_rate()` or
+`vat_moss_lite.declared_residence.calculate_rate()`. This information is necessary
 since some exceptions are city-specific and can't solely be detected by the
 user's IP address. This will return a tuple of
 `(Decimal rate, country code, exception name or None)`. Examples:
@@ -183,7 +183,7 @@ the end of http://ec.europa.eu/taxation_customs/resources/documents/taxation/vat
 for a full list.
 
 ```python
-import vat_moss.geoip2
+import vat_moss_lite.geoip2
 
 try:
     # Values from web server or API
@@ -192,12 +192,12 @@ try:
     subdivision_name = 'Massachusetts'
     city_name = 'Newburyport'
 
-    # Values from the result of vat_moss.billing_address.calculate_rate() or
-    # vat_moss.declared_residence.calculate_rate()
+    # Values from the result of vat_moss_lite.billing_address.calculate_rate() or
+    # vat_moss_lite.declared_residence.calculate_rate()
     address_country_code = 'US'
     address_exception = None
 
-    result = vat_moss.geoip2.calculate_rate(country_code, subdivision_name, city_name, address_country_code, address_exception)
+    result = vat_moss_lite.geoip2.calculate_rate(country_code, subdivision_name, city_name, address_country_code, address_exception)
     rate, country_code, exception_name = result
 
     # Save place of supply proof
@@ -219,17 +219,17 @@ cities, which are only tracked via GeoLite2 at the district level. This sounds
 confusing, but if you look at the GeoLite2 data, you'll see some of the city
 entries are actually district names. Lame, I know.
 
-In those situations, a `vat_moss.errors.UndefinitiveError()` exception will be
+In those situations, a `vat_moss_lite.errors.UndefinitiveError()` exception will be
 raised.
 
 ### Determine VAT Rate from International Phone Number
 
 Prompt the user for their international phone number (with leading +). Once
 you have the data, you need to feed the phone number to
-`vat_moss.phone_number.calculate_rate(phone_number, address_country_code, address_exception)`.
+`vat_moss_lite.phone_number.calculate_rate(phone_number, address_country_code, address_exception)`.
 The `address_country_code` and `address_exception` should be from
-`vat_moss.billing_address.calculate_rate()` or
-`vat_moss.declared_residence.calculate_rate()`. This information is necessary
+`vat_moss_lite.billing_address.calculate_rate()` or
+`vat_moss_lite.declared_residence.calculate_rate()`. This information is necessary
 since some exceptions are city-specific and can't solely be detected by the
 user's phone number. This will return a tuple of
 `(Decimal rate, country code, exception name or None)`. Examples:
@@ -243,18 +243,18 @@ the end of http://ec.europa.eu/taxation_customs/resources/documents/taxation/vat
 for a full list.
 
 ```python
-import vat_moss.phone_number
+import vat_moss_lite.phone_number
 
 try:
     # Values from user
     phone_number = '+19785720330'
 
-    # Values from the result of vat_moss.billing_address.calculate_rate() or
-    # vat_moss.declared_residence.calculate_rate()
+    # Values from the result of vat_moss_lite.billing_address.calculate_rate() or
+    # vat_moss_lite.declared_residence.calculate_rate()
     address_country_code = 'US'
     address_exception = None
 
-    result = vat_moss.phone_number.calculate_rate(phone_number, address_country_code, address_exception)
+    result = vat_moss_lite.phone_number.calculate_rate(phone_number, address_country_code, address_exception)
     rate, country_code, exception_name = result
 
     # Save place of supply proof
@@ -274,7 +274,7 @@ VAT rate for the user. This is because some exemptions are for individual
 cities, which can not be definitely determined by the user's phone number area
 code.
 
-In those situations, a `vat_moss.errors.UndefinitiveError()` exception will be
+In those situations, a `vat_moss_lite.errors.UndefinitiveError()` exception will be
 raised.
 
 ### Validate a VAT ID
@@ -297,20 +297,20 @@ format looks fairly correct, it gets sent along to the web server.
 
 
 ```python
-import vat_moss.id
-import vat_moss.errors
+import vat_moss_lite.id
+import vat_moss_lite.errors
 import urllib.error
 
 try:
-    result = vat_moss.id.validate('GB GD001')
+    result = vat_moss_lite.id.validate('GB GD001')
     if result:
         country_code, normalized_id, company_name = result
         # Do your processing to not charge VAT
 
-except (vat_moss.errors.InvalidError):
+except (vat_moss_lite.errors.InvalidError):
     # Make the user enter a new value
 
-except (vat_moss.errors.WebServiceUnavailableError):
+except (vat_moss_lite.errors.WebServiceUnavailableError):
     # There was an error processing the request within the VIES service.
     #
     # Unfortunately this tends to happen a lot with EU countries because the
@@ -332,7 +332,7 @@ Central Bank](https://www.ecb.europa.eu/stats/exchange/eurofxref/html/index.en.h
 They provide an [XML file](https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml)
 that is updated on business days between 2:15 and 3:00pm CET.
 
-The `vat_moss.exchange_rates.fetch()` method will download this XML file and
+The `vat_moss_lite.exchange_rates.fetch()` method will download this XML file and
 return a tuple containing the date of rates, as a string in the format
 `YYYY-MM-DD`, and a dict object with the keys being three-character currency
 codes and the values being `Decimal()` objects of the current rates, with the
@@ -345,11 +345,11 @@ most sense to use a scheduled job to fetch the rates and cache then. Personally,
 I fetch the rates daily and store them in a database table for future reference.
 
 ```python
-import vat_moss.exchange_rates
+import vat_moss_lite.exchange_rates
 import urllib.error
 
 try:
-    date, rates = vat_moss.exchange_rates.fetch()
+    date, rates = vat_moss_lite.exchange_rates.fetch()
     # Add rates to database table, or other local cache
 
 except (urllib.error.URLError):
@@ -360,7 +360,7 @@ except (urllib.error.URLError):
 
 The [money package](https://pypi.python.org/pypi/money) for Python is a
 reasonable choice for working with monetary values. The
-`vat_moss.exchange_rates` submodule includes a function that will use the
+`vat_moss_lite.exchange_rates` submodule includes a function that will use the
 exchange rates from the ECB to configure the exchange rates for `money`.
 
 The first parameter is the base currency, which should always be `EUR` when
@@ -371,11 +371,11 @@ objects representing the rates.
 ```python
 from decimal import Decimal
 from money import Money
-import vat_moss.exchange_rates
+import vat_moss_lite.exchange_rates
 
 # Grab the exchange rates from you local cache
 rates = {'EUR': Decimal('1.0000'), 'GBP': Decimal('0.77990'),}
-vat_moss.exchange_rates.setup_xrates('EUR', rates)
+vat_moss_lite.exchange_rates.setup_xrates('EUR', rates)
 
 # Now work with your money
 amount = Money('10.00', 'USD')
@@ -387,7 +387,7 @@ eur_amount = amount.to('EUR')
 With the laws concerning invoices, it is necessary to show at least the VAT tax
 due in the national currency of the country where your customer resides. To
 help in properly formatting the currency amount for the invoice, the
-`vat_moss.exchange_rates.format(amount, currency=None)` function exists.
+`vat_moss_lite.exchange_rates.format(amount, currency=None)` function exists.
 
 This function accepts either a `Money` object, or a `Decimal` object plus a
 string three-character currency code. It returns the amount formatted using the
@@ -398,16 +398,16 @@ adding the country initial before `kr`, as is typical in English writing.
 ```python
 from decimal import Decimal
 from money import Money
-import vat_moss.exchange_rates
+import vat_moss_lite.exchange_rates
 
 # Using a Money object
 amount = Money('4101.79', 'USD')
-print(vat_moss.exchange_rates.format(amount))
+print(vat_moss_lite.exchange_rates.format(amount))
 
 # Using a decimal and currency code
 amount = Decimal('4101.79')
 currency = 'USD'
-print(vat_moss.exchange_rates.format(amount, currency))
+print(vat_moss_lite.exchange_rates.format(amount, currency))
 ```
 
 The various output formats that are returned by this function include:

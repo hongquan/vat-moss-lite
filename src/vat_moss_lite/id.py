@@ -10,10 +10,12 @@ try:
     # Python 3
     from urllib.request import Request, urlopen
     from urllib.error import HTTPError
+
     str_cls = str
-except (ImportError):
+except ImportError:
     # Python 2
     from urllib2 import Request, urlopen, HTTPError
+
     str_cls = unicode
 
 from .errors import InvalidError, WebServiceError, WebServiceUnavailableError
@@ -96,7 +98,9 @@ def validate(vat_id):
     number = vat_id[2:]
 
     if not re.match(ID_PATTERNS[country_prefix]['regex'], number):
-        raise InvalidError('VAT ID does not appear to be properly formatted for %s' % country_prefix)
+        raise InvalidError(
+            'VAT ID does not appear to be properly formatted for %s' % country_prefix
+        )
 
     if country_prefix == 'NO':
         organization_number = number.replace('MVA', '')
@@ -170,12 +174,16 @@ def validate(vat_id):
             info = json.loads(return_json)
 
             # This should never happen, but keeping it incase the API is changed
-            if 'organisasjonsnummer' not in info or info['organisasjonsnummer'] != int(organization_number):
-                raise WebServiceError('No or different value for the "organisasjonsnummer" key in response from data.brreg.no')
+            if 'organisasjonsnummer' not in info or info['organisasjonsnummer'] != int(
+                organization_number
+            ):
+                raise WebServiceError(
+                    'No or different value for the "organisasjonsnummer" key in response from data.brreg.no'
+                )
 
             company_name = info['organisasjonsnummer']
 
-        except (HTTPError) as e:
+        except HTTPError as e:
             # If a number is invalid, we get a 404
             if e.code == 404:
                 raise InvalidError('VAT ID is invalid')
@@ -185,7 +193,7 @@ def validate(vat_id):
 
     # EU countries
     else:
-        post_data = '''
+        post_data = """
             <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:ec.europa.eu:taxud:vies:services:checkVat:types">
                <soapenv:Header/>
                <soapenv:Body>
@@ -195,14 +203,14 @@ def validate(vat_id):
                   </urn:checkVat>
                </soapenv:Body>
             </soapenv:Envelope>
-        ''' % (country_prefix, number)
+        """ % (country_prefix, number)
 
         request = Request('http://ec.europa.eu/taxation_customs/vies/services/checkVatService')
         request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8')
 
         try:
             response = urlopen(request, post_data.encode('utf-8'))
-        except (HTTPError) as e:
+        except HTTPError as e:
             # If one of the country VAT ID services is down, we get a 500
             if e.code == 500:
                 raise WebServiceUnavailableError('VAT ID validation is not currently available')
@@ -242,12 +250,12 @@ def validate(vat_id):
             # If we don't explicitly recode to UTF-8, ElementTree stupidly uses
             # ascii on Python 2.7
             envelope = ElementTree.fromstring(return_xml.encode('utf-8'))
-        except (ElementTree.ParseError):
+        except ElementTree.ParseError:
             raise WebServiceError('Unable to parse response from VIES')
 
         namespaces = {
             'soap': 'http://schemas.xmlsoap.org/soap/envelope/',
-            'vat':  'urn:ec.europa.eu:taxud:vies:services:checkVat:types'
+            'vat': 'urn:ec.europa.eu:taxud:vies:services:checkVat:types',
         }
         valid_elements = envelope.findall('./soap:Body/vat:checkVatResponse/vat:valid', namespaces)
         if not valid_elements:
@@ -275,118 +283,118 @@ def validate(vat_id):
 ID_PATTERNS = {
     'AT': {  # Austria
         'regex': '^U\\d{8}$',
-        'country_code': 'AT'
+        'country_code': 'AT',
     },
     'BE': {  # Belgium
         'regex': '^(1|0?)\\d{9}$',
-        'country_code': 'BE'
+        'country_code': 'BE',
     },
     'BG': {  # Bulgaria
         'regex': '^\\d{9,10}$',
-        'country_code': 'BG'
+        'country_code': 'BG',
     },
     'CY': {  # Cyprus
         'regex': '^\\d{8}[A-Z]$',
-        'country_code': 'CY'
+        'country_code': 'CY',
     },
     'CZ': {  # Czech Republic
         'regex': '^\\d{8,10}$',
-        'country_code': 'CZ'
+        'country_code': 'CZ',
     },
     'DE': {  # Germany
         'regex': '^\\d{9}$',
-        'country_code': 'DE'
+        'country_code': 'DE',
     },
     'DK': {  # Denmark
         'regex': '^\\d{8}$',
-        'country_code': 'DK'
+        'country_code': 'DK',
     },
     'EE': {  # Estonia
         'regex': '^\\d{9}$',
-        'country_code': 'EE'
+        'country_code': 'EE',
     },
     'EL': {  # Greece
         'regex': '^\\d{9}$',
-        'country_code': 'GR'
+        'country_code': 'GR',
     },
     'ES': {  # Spain
         'regex': '^[A-Z0-9]\\d{7}[A-Z0-9]$',
-        'country_code': 'ES'
+        'country_code': 'ES',
     },
     'FI': {  # Finland
         'regex': '^\\d{8}$',
-        'country_code': 'FI'
+        'country_code': 'FI',
     },
     'FR': {  # France
         'regex': '^[A-Z0-9]{2}\\d{9}$',
-        'country_code': 'FR'
+        'country_code': 'FR',
     },
     'GB': {  # United Kingdom
         'regex': '^(GD\\d{3}|HA\\d{3}|\\d{9}|\\d{12})$',
-        'country_code': 'GB'
+        'country_code': 'GB',
     },
     'HR': {  # Croatia
         'regex': '^\\d{11}$',
-        'country_code': 'HR'
+        'country_code': 'HR',
     },
     'HU': {  # Hungary
         'regex': '^\\d{8}$',
-        'country_code': 'HU'
+        'country_code': 'HU',
     },
     'IE': {  # Ireland
         'regex': '^(\\d{7}[A-Z]{1,2}|\\d[A-Z+*]\\d{5}[A-Z])$',
-        'country_code': 'IE'
+        'country_code': 'IE',
     },
     'IT': {  # Italy
         'regex': '^\\d{11}$',
-        'country_code': 'IT'
+        'country_code': 'IT',
     },
     'LT': {  # Lithuania
         'regex': '^(\\d{9}|\\d{12})$',
-        'country_code': 'LT'
+        'country_code': 'LT',
     },
     'LU': {  # Luxembourg
         'regex': '^\\d{8}$',
-        'country_code': 'LU'
+        'country_code': 'LU',
     },
     'LV': {  # Latvia
         'regex': '^\\d{11}$',
-        'country_code': 'LV'
+        'country_code': 'LV',
     },
     'MT': {  # Malta
         'regex': '^\\d{8}$',
-        'country_code': 'MT'
+        'country_code': 'MT',
     },
     'NL': {  # Netherlands
         'regex': '^\\d{9}B\\d{2}$',
-        'country_code': 'NL'
+        'country_code': 'NL',
     },
     'NO': {  # Norway
         'regex': '^\\d{9}MVA$',
-        'country_code': 'NO'
+        'country_code': 'NO',
     },
     'PL': {  # Poland
         'regex': '^\\d{10}$',
-        'country_code': 'PL'
+        'country_code': 'PL',
     },
     'PT': {  # Portugal
         'regex': '^\\d{9}$',
-        'country_code': 'PT'
+        'country_code': 'PT',
     },
     'RO': {  # Romania
         'regex': '^\\d{2,10}$',
-        'country_code': 'RO'
+        'country_code': 'RO',
     },
     'SE': {  # Sweden
         'regex': '^\\d{12}$',
-        'country_code': 'SE'
+        'country_code': 'SE',
     },
     'SI': {  # Slovenia
         'regex': '^\\d{8}$',
-        'country_code': 'SI'
+        'country_code': 'SI',
     },
     'SK': {  # Slovakia
         'regex': '^\\d{10}$',
-        'country_code': 'SK'
+        'country_code': 'SK',
     },
 }
