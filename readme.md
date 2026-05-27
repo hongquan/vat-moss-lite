@@ -22,14 +22,13 @@ EU. This was primarily built to support companies selling software licenses or
 SaaS. *Ebook tax rates may be different - this library does not currently
 differentiate for those.*
 
-`vat-moss-lite` is a fork of [vat_moss](https://pypi.org/project/vat_moss/) to add support for Python 3.13 onward,
-due to the later being unmaintained and not compatible with Python 3.13 (due to dependence on now-removed `cgi` module).
+`vat-moss-lite` is a maintained fork of [vat_moss](https://pypi.org/project/vat_moss/), which was
+abandoned and incompatible with Python 3.13+ due to its use of the deprecated `cgi` module. This fork
+modernizes the codebase with the following improvements:
 
-What's new:
-
-- No longer depend on `cgi`.
-- Type safe.
-- Adopt modern Python project layout (_pyproject.toml_ file).
+- Removes `cgi` dependency for Python 3.13+ compatibility.
+- Full type annotations.
+- Modern Python project structure with `pyproject.toml`.
 
 ## Resources
 
