@@ -7,7 +7,7 @@ import vat_moss_lite.id
 # (name, raw_vat_id, expected_normalized, expected_country_code)
 # NOTE: Albania ('al') is excluded — normalize raises UnrecognizedCountryError for it;
 #       see test_normalize_unrecognized_country below.
-_VALID_IDS = [
+_VALID_IDS: list[tuple[str, str, str, str]] = [
     ('at', 'ATU 38289400', 'ATU38289400', 'AT'),
     ('be', 'BE0844.044.609', 'BE0844044609', 'BE'),
     ('bg', 'BG160072254', 'BG160072254', 'BG'),
@@ -39,18 +39,18 @@ _VALID_IDS = [
     ('sk', 'sk2020270780', 'SK2020270780', 'SK'),
 ]
 
-_INVALID_IDS = [('GBGD000',), ('IE000000',), ('AT1',)]
+_INVALID_IDS: list[tuple[str]] = [('GBGD000',), ('IE000000',), ('AT1',)]
 
 
 @pytest.mark.parametrize(
     'vat_id, expected_normalized, expected_country_code',
     [pytest.param(row[1], row[2], row[3], id=row[0]) for row in _VALID_IDS],
 )
-def test_normalize(vat_id, expected_normalized, expected_country_code):
+def test_normalize(vat_id: str, expected_normalized: str, expected_country_code: str) -> None:
     assert vat_moss_lite.id.normalize(vat_id) == expected_normalized
 
 
-def test_normalize_unrecognized_country():
+def test_normalize_unrecognized_country() -> None:
     """Albania is not in ID_PATTERNS — normalize must raise UnrecognizedCountryError."""
     with pytest.raises(vat_moss_lite.errors.UnrecognizedCountryError):
         vat_moss_lite.id.normalize('AL J 61929021 E')
@@ -60,7 +60,7 @@ def test_normalize_unrecognized_country():
     'vat_id, expected_normalized, expected_country_code',
     [pytest.param(row[1], row[2], row[3], id=row[0]) for row in _VALID_IDS],
 )
-def test_validate_id(vat_id, expected_normalized, expected_country_code):
+def test_validate_id(vat_id: str, expected_normalized: str, expected_country_code: str) -> None:
     try:
         result = vat_moss_lite.id.validate(vat_id)
         if result:
@@ -74,6 +74,6 @@ def test_validate_id(vat_id, expected_normalized, expected_country_code):
 
 
 @pytest.mark.parametrize('vat_id', [row[0] for row in _INVALID_IDS])
-def test_validate_id_invalid(vat_id):
+def test_validate_id_invalid(vat_id: str) -> None:
     with pytest.raises(vat_moss_lite.errors.InvalidError):
         vat_moss_lite.id.validate(vat_id)

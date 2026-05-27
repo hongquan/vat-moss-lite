@@ -5,7 +5,7 @@ import pytest
 import vat_moss_lite.billing_address
 
 
-_ADDRESSES = [
+_ADDRESSES: list[tuple[str, str | None, str, Decimal, str, str | None]] = [
     # Example user input                                # Expected result
     ('AT', '6691', 'Jungholz', Decimal('0.19'), 'AT', 'Jungholz'),
     ('AT', '6991', 'Mittelberg', Decimal('0.19'), 'AT', 'Mittelberg'),
@@ -85,7 +85,7 @@ _ADDRESSES = [
     ('CA', 'K2R 1C5', 'Ottawa', Decimal('0.0'), 'CA', None),
 ]
 
-_INVALID_ADDRESSES = [
+_INVALID_ADDRESSES: list[tuple[str, str | None, str | None]] = [
     ('CA', None, 'Ottawa'),
     ('US', None, 'Boston'),
     ('', '02108', 'Boston'),
@@ -98,8 +98,13 @@ _INVALID_ADDRESSES = [
     _ADDRESSES,
 )
 def test_calculate_rate(
-    country_code, postal_code, city, expected_rate, expected_country_code, expected_exception_name
-):
+    country_code: str,
+    postal_code: str | None,
+    city: str,
+    expected_rate: Decimal,
+    expected_country_code: str,
+    expected_exception_name: str | None,
+) -> None:
     result = vat_moss_lite.billing_address.calculate_rate(country_code, postal_code, city)
     result_rate, result_country_code, result_exception_name = result
     assert result_rate == expected_rate
@@ -108,6 +113,8 @@ def test_calculate_rate(
 
 
 @pytest.mark.parametrize('country_code, postal_code, city', _INVALID_ADDRESSES)
-def test_calculate_rate_invalid(country_code, postal_code, city):
+def test_calculate_rate_invalid(
+    country_code: str, postal_code: str | None, city: str | None
+) -> None:
     with pytest.raises(ValueError):
-        vat_moss_lite.billing_address.calculate_rate(country_code, postal_code, city)
+        vat_moss_lite.billing_address.calculate_rate(country_code, postal_code, city)  # type: ignore[arg-type]  # reason: intentionally passing None city to assert ValueError

@@ -5,7 +5,7 @@ import pytest
 import vat_moss_lite.declared_residence
 
 
-_RESIDENCES = [
+_RESIDENCES: list[tuple[str, str | None, Decimal, str, str | None]] = [
     # User input                           # Expected result
     ('AT', 'Jungholz', Decimal('0.19'), 'AT', 'Jungholz'),
     ('AT', 'Mittelberg', Decimal('0.19'), 'AT', 'Mittelberg'),
@@ -74,8 +74,12 @@ _EXCEPTIONS: list[tuple[str, list[str]]] = [
     _RESIDENCES,
 )
 def test_calculate_rate(
-    country_code, exception_name, expected_rate, expected_country_code, expected_exception_name
-):
+    country_code: str,
+    exception_name: str | None,
+    expected_rate: Decimal,
+    expected_country_code: str,
+    expected_exception_name: str | None,
+) -> None:
     result = vat_moss_lite.declared_residence.calculate_rate(country_code, exception_name)
     result_rate, result_country_code, result_exception_name = result
     assert result_rate == expected_rate
@@ -84,5 +88,5 @@ def test_calculate_rate(
 
 
 @pytest.mark.parametrize('country, expected_exceptions', _EXCEPTIONS)
-def test_exceptions_by_country(country, expected_exceptions):
+def test_exceptions_by_country(country: str, expected_exceptions: list[str]) -> None:
     assert vat_moss_lite.declared_residence.exceptions_by_country(country) == expected_exceptions

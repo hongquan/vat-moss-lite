@@ -5,7 +5,7 @@ import pytest
 import vat_moss_lite.exchange_rates
 
 
-_CURRENCY_FORMATS = [
+_CURRENCY_FORMATS: list[tuple[str, str, str]] = [
     ('BGN', '4101.79', '4,101.79 Lev'),
     ('CZK', '4101.79', '4.101,79 Kč'),
     ('DKK', '4101.79', '4.101,79 Dkr'),
@@ -21,8 +21,19 @@ _CURRENCY_FORMATS = [
 ]
 
 
-def test_fetch():
-    valid_currency_codes = ['CZK', 'DKK', 'EUR', 'GBP', 'HUF', 'NOK', 'PLN', 'RON', 'SEK', 'USD']
+def test_fetch() -> None:
+    valid_currency_codes: list[str] = [
+        'CZK',
+        'DKK',
+        'EUR',
+        'GBP',
+        'HUF',
+        'NOK',
+        'PLN',
+        'RON',
+        'SEK',
+        'USD',
+    ]
     date, rates = vat_moss_lite.exchange_rates.fetch()
     assert isinstance(date, str)
     for code in valid_currency_codes:
@@ -30,5 +41,5 @@ def test_fetch():
 
 
 @pytest.mark.parametrize('code, amount, expected_result', _CURRENCY_FORMATS)
-def test_format(code, amount, expected_result):
+def test_format(code: str, amount: str, expected_result: str) -> None:
     assert vat_moss_lite.exchange_rates.format(Decimal(amount), code) == expected_result

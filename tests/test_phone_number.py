@@ -5,7 +5,7 @@ import pytest
 import vat_moss_lite.phone_number
 
 
-_PHONE_NUMBERS = [
+_PHONE_NUMBERS: list[tuple[str, str, str | None, Decimal, str, str | None]] = [
     # Phone number         # Address info                   # Expected result
     ('+43 5676 8135', 'AT', 'Jungholz', Decimal('0.19'), 'AT', 'Jungholz'),
     ('+43 5676 8135', 'AT', None, Decimal('0.19'), 'AT', 'Jungholz'),
@@ -304,13 +304,13 @@ _PHONE_NUMBERS = [
     _PHONE_NUMBERS,
 )
 def test_calculate_rate(
-    phone_number,
-    address_country_code,
-    address_exception,
-    expected_rate,
-    expected_country_code,
-    expected_exception_name,
-):
+    phone_number: str,
+    address_country_code: str,
+    address_exception: str | None,
+    expected_rate: Decimal,
+    expected_country_code: str,
+    expected_exception_name: str | None,
+) -> None:
     result = vat_moss_lite.phone_number.calculate_rate(
         phone_number, address_country_code, address_exception
     )

@@ -5,7 +5,7 @@ import pytest
 import vat_moss_lite.geoip2
 
 
-_GEODATA = [
+_GEODATA: list[tuple[str, str, str, str, str | None, Decimal, str, str | None]] = [
     # GeoLite2 Data                                                # Address info                   # Expected result
     ('AT', 'Tyrol', 'Reutte', 'AT', 'Jungholz', Decimal('0.19'), 'AT', 'Jungholz'),
     ('AT', 'Tyrol', 'Reutte', 'AT', None, Decimal('0.20'), 'AT', None),
@@ -116,15 +116,15 @@ _GEODATA = [
     _GEODATA,
 )
 def test_calculate_rate(
-    country_code,
-    subdivision,
-    city,
-    address_country_code,
-    address_exception,
-    expected_rate,
-    expected_country_code,
-    expected_exception_name,
-):
+    country_code: str,
+    subdivision: str,
+    city: str,
+    address_country_code: str,
+    address_exception: str | None,
+    expected_rate: Decimal,
+    expected_country_code: str,
+    expected_exception_name: str | None,
+) -> None:
     result = vat_moss_lite.geoip2.calculate_rate(
         country_code, subdivision, city, address_country_code, address_exception
     )
