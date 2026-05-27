@@ -12,6 +12,8 @@ Changelog following https://common-changelog.org/ convention
 - `id.py`: Migrated Norwegian VAT validation from the retired `data.brreg.no/enhetsregisteret/enhet/{id}.json` endpoint to the new REST API (`/enhetsregisteret/api/enheter/{id}`). Response field `organisasjonsnummer` is now a string; company name now read from `navn`.
 - `id.py`: VIES endpoint switched from HTTP to HTTPS; `Content-Type` corrected from `application/x-www-form-urlencoded` to `text/xml` (resolves HTTP 400 errors).
 - `id.py`, `exchange_rates.py`: Replaced deprecated `cgi.parse_header` with `email.message.Message.get_param` for charset extraction.
+- Tests: Converted all six test modules from `unittest.TestCase` + custom `DataDecorator`/`@data` pattern to plain pytest functions with `@pytest.mark.parametrize`. Removed `tests/unittest_data.py`.
+- `readme.md`: Updated Python version note to 3.13+ and replaced `python tests.py` run command with `pytest tests/`.
 
 ### Fixed
 

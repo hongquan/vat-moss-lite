@@ -5,37 +5,37 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree
 
-from .errors import InvalidError, WebServiceError, WebServiceUnavailableError
+from .errors import (
+    InvalidError,
+    UnrecognizedCountryError,
+    WebServiceError,
+    WebServiceUnavailableError,
+)
 
 
-def normalize(vat_id: str | None) -> str | None:
+def normalize(vat_id: str) -> str:
     """
-    Accepts a VAT ID and normaizes it, getting rid of spaces, periods, dashes
-    etc and converting it to upper case.
+    Accepts a VAT ID and normalizes it, removing spaces, periods, dashes
+    and converting it to upper case.
 
     :param vat_id:
-        The VAT ID to check. Allows "GR" prefix for Greece, even though it
-        should be "EL".
+        The VAT ID to normalize. Allows "GR" prefix for Greece, even though
+        it should be "EL".
 
-    :raises:
-        ValueError - If the is not a string or is not in the format of two characters plus an identifier
+    :raises InvalidError:
+        If the VAT ID is fewer than three characters long.
+    :raises UnrecognizedCountryError:
+        If the country code prefix is not a recognized EU country or Norway.
 
     :return:
-        None if the VAT ID is blank or not for an EU country or Norway
-        Otherwise a normalized string containing the VAT ID
+        Normalized string containing the VAT ID.
     """
 
-    if not vat_id:
-        return None
-
-    if not isinstance(vat_id, str):
-        raise ValueError('VAT ID is not a string')
-
     if len(vat_id) < 3:
-        raise ValueError('VAT ID must be at least three character long')
+        raise InvalidError('VAT ID must be at least three character long')
 
     # Normalize the ID for simpler regexes
-    vat_id = re.sub('\\s+', '', vat_id)
+    vat_id = re.sub(r'\s+', '', vat_id)
     vat_id = vat_id.replace('-', '')
     vat_id = vat_id.replace('.', '')
     vat_id = vat_id.upper()
@@ -48,7 +48,8 @@ def normalize(vat_id: str | None) -> str | None:
         country_prefix = 'EL'
 
     if country_prefix not in ID_PATTERNS:
-        return None
+        message = f'Country code must be among {ID_PATTERNS.keys()}'
+        raise UnrecognizedCountryError(message)
 
     return vat_id
 
@@ -57,28 +58,36 @@ def validate(vat_id: str | None) -> tuple[str, str, str] | None:
     """
     Runs some basic checks to ensure a VAT ID looks properly formatted. If so,
     checks it against the VIES system for EU VAT IDs or data.brreg.no for
-    Norwegian VAT ID.
+    Norwegian VAT IDs.
 
     :param vat_id:
         The VAT ID to check. Allows "GR" prefix for Greece, even though it
-        should be "EL".
+        should be "EL". Pass ``None`` or an empty string to get ``None`` back.
 
-    :raises:
-        ValueError - If the is not a string or is not in the format of two characters plus an identifier
-        InvalidError - If the VAT ID is not valid
-        WebServiceUnavailableError - If the VIES VAT ID service is unable to process the request - this is fairly common
-        WebServiceError - If there was an error parsing the response from the server - usually this means something changed in the webservice
-        urllib.error.URLError/urllib2.URLError - If there is an issue communicating with VIES or data.brreg.no
+    :raises InvalidError:
+        If the VAT ID is not properly formatted or is not valid according to
+        the remote service.
+    :raises UnrecognizedCountryError:
+        If the country code prefix is not a recognized EU country or Norway.
+    :raises WebServiceUnavailableError:
+        If the VIES VAT ID service is unable to process the request — this
+        is fairly common.
+    :raises WebServiceError:
+        If there was an error parsing the response from the server, usually
+        meaning something changed in the web service.
+    :raises urllib.error.URLError:
+        If there is a network error communicating with VIES or data.brreg.no.
 
     :return:
-        None if the VAT ID is blank or not for an EU country or Norway
-        A tuple of (two-character country code, normalized VAT id, company name) if valid
+        ``None`` if the VAT ID is blank.
+        A tuple of ``(two-character country code, normalized VAT ID, company name)``
+        if the VAT ID is valid.
     """
-
-    vat_id = normalize(vat_id)
 
     if not vat_id:
         return None
+
+    vat_id = normalize(vat_id)
 
     country_prefix = vat_id[0:2]
 

@@ -18,6 +18,10 @@ class InvalidError(ValueError):
     pass
 
 
+class UnrecognizedCountryError(ValueError):
+    pass
+
+
 class WebServiceError(URLError):
     """
     If there was an unexpected result from a call to one of the VAT validation

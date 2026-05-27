@@ -22,6 +22,15 @@ EU. This was primarily built to support companies selling software licenses or
 SaaS. *Ebook tax rates may be different - this library does not currently
 differentiate for those.*
 
+`vat-moss-lite` is a fork of [vat_moss](https://pypi.org/project/vat_moss/) to add support for Python 3.13 onward,
+due to the later being unmaintained and not compatible with Python 3.13 (due to dependence on now-removed `cgi` module).
+
+What's new:
+
+- No longer depend on `cgi`.
+- Type safe.
+- Adopt modern Python project layout (_pyproject.toml_ file).
+
 ## Resources
 
 In the process of writing this library, I performed quite a bit of research
@@ -43,7 +52,7 @@ Python 3.13+. *No third-party packages required.*
 
 ## Version
 
-0.11.0 - [changelog](CHANGELOG.md)
+0.12.0 - [changelog](CHANGELOG.md)
 
 ## Installation
 
@@ -62,8 +71,7 @@ pip install vat_moss_lite
  - [Configure money Package Exchange Rates](#configure-money-package-exchange-rates)
  - [Format European Currencies for Invoices](#format-european-currencies-for-invoices)
 
-Code examples are written in Python 3. The only change that should be needed to
-convert them to Python 2 is to replace `urllib.error` with `urllib2`.
+Code examples are written in Python 3.13+.
 
 ### Determine VAT Rate from Billing Address
 
@@ -431,11 +439,11 @@ The various output formats that are returned by this function include:
 
 ## Tests
 
-Almost [500 unit and integrations tests](tests/) are included with this
-library. They can be run by executing the following in a terminal:
+Almost [500 unit and integration tests](tests/) are included with this
+library. Run them with:
 
 ```bash
-python tests.py
+pytest tests/
 ```
 
 ## License
