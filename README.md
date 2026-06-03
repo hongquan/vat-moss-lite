@@ -37,7 +37,12 @@ The `lite` suffix in its name means that:
 - As a non-European developer, I do not have sufficient expertise to cover all specific tax rules for every EU country.
 - In the future, I aim to remove the built-in HTTP API calls to make this a sans-io library, allowing users to choose their own sync or async HTTP client.
 
-Development uses [PDM](https://pypi.org/project/pdm/) for package management, which was used to convert the original setuptools-based layout to `pyproject.toml`.
+### Development tools
+
+- Package management: [PDM](https://pypi.org/project/pdm/) (used to convert the original setuptools-based layout to `pyproject.toml`)
+- Linting: [Ruff](https://github.com/astral-sh/ruff)
+- Type checking: [Zuban](https://zubanls.com)
+- Git hooks: [Prek](https://prek.j178.dev)
 
 ## Resources
 
