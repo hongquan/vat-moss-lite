@@ -22,13 +22,22 @@ EU. This was primarily built to support companies selling software licenses or
 SaaS. *Ebook tax rates may be different - this library does not currently
 differentiate for those.*
 
+## Maintenance
+
 `vat-moss-lite` is a maintained fork of [vat_moss](https://pypi.org/project/vat_moss/), which was
 abandoned and incompatible with Python 3.13+ due to its use of the deprecated `cgi` module. This fork
 modernizes the codebase with the following improvements:
 
 - Removes `cgi` dependency for Python 3.13+ compatibility.
-- Full type annotations.
-- Modern Python project structure with `pyproject.toml`.
+- Provides full type annotations.
+- Uses a modern Python project structure with `pyproject.toml`.
+
+The `lite` suffix in its name means that:
+
+- As a non-European developer, I do not have sufficient expertise to cover all specific tax rules for every EU country.
+- In the future, I aim to remove the built-in HTTP API calls to make this a sans-io library, allowing users to choose their own sync or async HTTP client.
+
+Development uses [PDM](https://pypi.org/project/pdm/) for package management, which was used to convert the original setuptools-based layout to `pyproject.toml`.
 
 ## Resources
 
@@ -47,7 +56,7 @@ Hopefully the information below will prove useful to others:
 
 ## Dependencies
 
-Python 3.13+. *No third-party packages required.*
+Python 3.12+. *No third-party packages required.*
 
 ## Version
 
@@ -57,6 +66,18 @@ Python 3.13+. *No third-party packages required.*
 
 ```bash
 pip install vat_moss_lite
+```
+
+Using [PDM](https://pypi.org/project/pdm/):
+
+```bash
+pdm add vat_moss_lite
+```
+
+Using [uv](https://github.com/astral-sh/uv):
+
+```bash
+uv add vat_moss_lite
 ```
 
 ## API
@@ -70,7 +91,7 @@ pip install vat_moss_lite
  - [Configure money Package Exchange Rates](#configure-money-package-exchange-rates)
  - [Format European Currencies for Invoices](#format-european-currencies-for-invoices)
 
-Code examples are written in Python 3.13+.
+Code examples are written in Python 3.12+.
 
 ### Determine VAT Rate from Billing Address
 
