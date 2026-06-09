@@ -56,6 +56,12 @@ def test_normalize_unrecognized_country() -> None:
         vat_moss_lite.id.normalize('AL J 61929021 E')
 
 
+# Integration test: hits the live VIES SOAP endpoint, so individual country
+# parameters may be skipped (not failed) when the per-member-state backend
+# returns MS_UNAVAILABLE / MS_MAX_CONCURRENT_REQ / SERVICE_UNAVAILABLE / TIMEOUT.
+# These faults are transient (rate limiting or member-state outage), not a bug
+# in the code under test — re-running later usually clears them. A retry-with-
+# backoff wrapper would make the skip much rarer.
 @pytest.mark.parametrize(
     'vat_id, expected_normalized, expected_country_code',
     [pytest.param(row[1], row[2], row[3], id=row[0]) for row in _VALID_IDS],
