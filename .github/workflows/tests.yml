@@ -3,6 +3,7 @@ name: Tests
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
 
@@ -52,7 +53,7 @@ jobs:
   deploy:
     needs: [test, typecheck]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     permissions:
       id-token: write
     environment: pypi
@@ -65,13 +66,11 @@ jobs:
         with:
           python-version: '3.14'
 
-      - name: Install PDM
-        uses: pdm-project/setup-pdm@v4
-        with:
-          python-version: '3.14'
+      - name: Install build
+        run: python -m pip install build
 
       - name: Build
-        run: pdm build
+        run: python -m build
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
