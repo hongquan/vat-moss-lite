@@ -65,7 +65,7 @@ Python 3.12+. *No third-party packages required.*
 
 ## Version
 
-0.12.0 - [changelog](CHANGELOG.md)
+0.12.1 - [changelog](CHANGELOG.md)
 
 ## Installation
 

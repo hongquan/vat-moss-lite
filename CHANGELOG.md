@@ -1,6 +1,13 @@
 Changelog following https://common-changelog.org/ convention
 
-## Unreleased
+## 0.12.1 - 2026-06-20
+
+### Changed
+
+- Build backend switched from `pdm-backend` to `hatchling` (fixes Unicode author name encoding in PKG-INFO metadata).
+- Version is now read dynamically from `src/vat_moss_lite/__init__.py`.
+
+## 0.12.0
 
 ### Added
 

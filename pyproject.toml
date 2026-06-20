@@ -1,6 +1,6 @@
 [project]
 name = "vat-moss-lite"
-version = "0.12.0"
+dynamic = ["version"]
 description = "Tools for VAT MOSS and Norway VAT on digital services."
 authors = [
     {name = "Nguyễn Hồng Quân", email = "ng.hong.quan@gmail.com"},
@@ -30,6 +30,9 @@ lint = [
 test = [
     "pytest>=9.0.3",
 ]
+
+[tool.hatch.version]
+path = "src/vat_moss_lite/__init__.py"
 
 [build-system]
 requires = ["hatchling"]
