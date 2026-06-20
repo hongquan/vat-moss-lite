@@ -70,19 +70,19 @@ Python 3.12+. *No third-party packages required.*
 ## Installation
 
 ```bash
-pip install vat_moss_lite
+pip install vat-moss-lite
 ```
 
 Using [PDM](https://pypi.org/project/pdm/):
 
 ```bash
-pdm add vat_moss_lite
+pdm add vat-moss-lite
 ```
 
 Using [uv](https://github.com/astral-sh/uv):
 
 ```bash
-uv add vat_moss_lite
+uv add vat-moss-lite
 ```
 
 ## API
